@@ -256,9 +256,9 @@ export default function Header({ session: data }: HeaderProps) {
 						</div>
 					)}
 				</div>
-				<div className='ml-2 hidden lg:block'>
+				{/* <div className='ml-2 hidden lg:block'>
 					<ModeToggle />
-				</div>
+				</div> */}
 			</nav>
 		</div>
 	);

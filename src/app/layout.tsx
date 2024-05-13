@@ -26,7 +26,7 @@ export default async function RootLayout({
 				<link rel='icon' href='/favicon.ico' sizes='any' />
 			</head>
 			<body className={inter.className}>
-				<ThemeProvider attribute='class' defaultTheme='system'>
+				<ThemeProvider attribute='class' defaultTheme='light'>
 					<header className='sticky top-0 z-40'>
 						<Header session={session} />
 					</header>
