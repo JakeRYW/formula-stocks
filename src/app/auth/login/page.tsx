@@ -1,10 +1,12 @@
 'use client';
 
+import { LoginForm } from '@/components/login-form';
+import { LoginModal } from '@/components/login-modal';
 import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function SignIn() {
+export default function LoginPage() {
 	const router = useRouter();
 	const { status } = useSession();
 	const searchParams = useSearchParams();
@@ -12,16 +14,19 @@ export default function SignIn() {
 	const lastPage = callbackUrl?.split('/').slice(-1)[0];
 
 	useEffect(() => {
-		if (status === 'unauthenticated') {
-			signIn('twitch');
-		} else if (status === 'authenticated') {
-			router.push(callbackUrl || '/');
-		}
+		// if (status === 'unauthenticated') {
+		// 	// signIn('twitch');
+		// } else if (status === 'authenticated') {
+		// 	router.push(callbackUrl || '/');
+		// }
 	}, [router, status]);
 
 	return (
 		<>
-			<div className='flex flex-row h-[calc(100vh-88px)] justify-center items-center'>
+			<div className='bg-black/5'>
+				<LoginForm />
+			</div>
+			{/* <div className='flex flex-row h-[calc(100vh-88px)] justify-center items-center'>
 				<h1 className='text-2xl font-semibold'>
 					Redirecting{' '}
 					{status === 'authenticated'
@@ -48,7 +53,7 @@ export default function SignIn() {
 						/>
 					</svg>
 				</div>
-			</div>
+			</div> */}
 		</>
 	);
 }

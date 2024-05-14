@@ -7,7 +7,7 @@ interface Props {
 	children: React.ReactNode;
 }
 
-export default function AuthLayout(props: Props) {
+export default function AuthLayout(props) {
 	return (
 		<SessionProvider>
 			<Suspense fallback={<div />}>{props.children}</Suspense>
