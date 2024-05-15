@@ -14,11 +14,11 @@ export default function LoginPage() {
 	const lastPage = callbackUrl?.split('/').slice(-1)[0];
 
 	useEffect(() => {
-		// if (status === 'unauthenticated') {
-		// 	// signIn('twitch');
-		// } else if (status === 'authenticated') {
-		// 	router.push(callbackUrl || '/');
-		// }
+		if (status === 'unauthenticated') {
+			// signIn('twitch');
+		} else if (status === 'authenticated') {
+			router.push(callbackUrl || '/');
+		}
 	}, [router, status]);
 
 	return (

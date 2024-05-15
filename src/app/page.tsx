@@ -1,6 +1,8 @@
 import ErrorMessage from '@/components/error-message';
+import { LoginModal } from '@/components/login-modal';
 import SideBar from '@/components/side-bar';
 import StreamerCard from '@/components/streamer-card';
+import { Button } from '@/components/ui/button';
 import { users } from '@/drizzle/schema';
 
 import { auth } from '@/lib/auth';
@@ -8,6 +10,7 @@ import { db } from '@/lib/db';
 import { convertPercentage } from '@/lib/utils';
 import { Portfolio, PortfolioStock, Stock } from '@/types';
 import { eq } from 'drizzle-orm';
+import Link from 'next/link';
 
 let fetchingError: boolean = false;
 
@@ -59,6 +62,7 @@ export default async function HomePage() {
 		portfolio = await getPortfolio(session?.user?.id);
 		portfolioValue = getPortfolioValue(stocks, portfolio);
 	}
+	console.log('PAGE:', session);
 
 	return (
 		<>

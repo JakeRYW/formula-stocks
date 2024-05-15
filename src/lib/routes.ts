@@ -1,9 +1,11 @@
-export const publicRoutes = ['/', '/streamers', '/leaderboards'];
+export const publicRoutes = ['/drivers', '/leaderboards', '/stock'];
 
-export const authRoutes = ['/auth/register', 'auth/login', '/api/auth/signin'];
+export const authRoutes = ['/auth/register', '/auth/login', '/auth/error'];
 
 export const apiAuthPrefix = '/api/auth';
 
 export const apiRoutes = ['/api/stocks', '/api/account', '/api/transaction'];
 
-export const DEFAULT_LOGIN_REDIRECT = '/';
+export const adminRoutes = ['/admin'];
+
+export const BASE_URL = '/';

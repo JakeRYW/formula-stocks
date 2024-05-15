@@ -27,9 +27,7 @@ export default async function RootLayout({
 			</head>
 			<body className={inter.className}>
 				<ThemeProvider attribute='class' defaultTheme='light'>
-					<header className='sticky top-0 z-40'>
-						<Header session={session} />
-					</header>
+					<Header session={session} />
 					{children}
 				</ThemeProvider>
 			</body>

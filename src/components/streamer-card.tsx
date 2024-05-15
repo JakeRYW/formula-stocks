@@ -49,7 +49,7 @@ export default function StreamerCard({
 
 						<Link
 							className='z-30 flex items-center'
-							href={`/${username
+							href={`stock/${username
 								.replace(' ', '-')
 								.toLowerCase()}`}
 						>
