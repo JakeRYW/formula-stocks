@@ -1,12 +1,6 @@
 import { BarChart2 } from 'lucide-react';
 
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 import Link from 'next/link';
 import { FormError } from '../components/form-error';
@@ -24,7 +18,7 @@ export default function ErrorPage() {
 					</CardHeader>
 					<CardContent>
 						<div className='grid gap-x-2'>
-							<FormError message='Oops! Somethign went wrong!' />
+							<FormError message='Oops! Something went wrong!' />
 							<div className='mt-4 text-center text-sm'>
 								<Link href='/auth/login' className='underline'>
 									Back to login
