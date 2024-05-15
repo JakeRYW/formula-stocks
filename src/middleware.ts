@@ -14,7 +14,7 @@ const { auth } = NextAuth(authConfig);
 export default auth(async (req) => {
 	const { nextUrl } = req;
 	const isLoggedIn = !!req.auth;
-
+	const isAdmin = req.auth?.user?.role === 'admin';
 	const isHome = nextUrl.pathname === '/';
 	const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
 	const isAuthRoute = authRoutes.includes(nextUrl.pathname);
@@ -27,9 +27,6 @@ export default auth(async (req) => {
 	const isAdminRoute = adminRoutes.find((route) =>
 		nextUrl.pathname.startsWith(`${route}`)
 	);
-
-	const session = await auth();
-	//console.log(session);
 
 	if (isHome) {
 		return;
@@ -44,7 +41,7 @@ export default auth(async (req) => {
 	}
 
 	if (isAdminRoute) {
-		if (session?.user?.role === 'admin') {
+		if (isAdmin) {
 			console.log('admin');
 			return;
 		}
@@ -53,7 +50,7 @@ export default auth(async (req) => {
 
 	if (isAuthRoute) {
 		if (isLoggedIn) {
-			//return Response.redirect(new URL(BASE_URL, nextUrl));
+			return Response.redirect(new URL(BASE_URL, nextUrl));
 		}
 		return;
 	}

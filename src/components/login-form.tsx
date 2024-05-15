@@ -45,7 +45,6 @@ export function LoginForm() {
 					className='mx-auto max-w-sm w-full'
 					onClick={(e) => {
 						e.stopPropagation();
-						console.log('actual click');
 					}}
 				>
 					<CardHeader>

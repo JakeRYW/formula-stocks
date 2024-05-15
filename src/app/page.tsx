@@ -62,7 +62,6 @@ export default async function HomePage() {
 		portfolio = await getPortfolio(session?.user?.id);
 		portfolioValue = getPortfolioValue(stocks, portfolio);
 	}
-	console.log('PAGE:', session);
 
 	return (
 		<>
