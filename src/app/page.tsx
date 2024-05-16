@@ -1,16 +1,9 @@
 import ErrorMessage from '@/components/error-message';
-import { LoginModal } from '@/components/login-modal';
 import SideBar from '@/components/side-bar';
 import StreamerCard from '@/components/streamer-card';
-import { Button } from '@/components/ui/button';
-import { users } from '@/drizzle/schema';
 
 import { auth } from '@/lib/auth';
-import { db } from '@/lib/db';
 import { convertPercentage } from '@/lib/utils';
-import { Portfolio, PortfolioStock, Stock } from '@/types';
-import { eq } from 'drizzle-orm';
-import Link from 'next/link';
 
 let fetchingError: boolean = false;
 
@@ -28,40 +21,9 @@ async function getStocks() {
 	}
 }
 
-async function getPortfolio(id: string) {
-	'use server';
-	const res = await db
-		.select({
-			portfolio: users.portfolio,
-		})
-		.from(users)
-		.where(eq(users.id, id));
-	if (res.length > 0) return res[0].portfolio as Portfolio;
-	else return {};
-}
-
-function getPortfolioValue(stocks: PortfolioStock[], portfolio: Portfolio) {
-	let value = 0;
-	for (const holding in portfolio) {
-		const stock = stocks.filter(
-			(stock: PortfolioStock) => stock.id === holding
-		)[0];
-		value += stock.price * portfolio[holding].amount;
-	}
-
-	return value;
-}
-
 export default async function HomePage() {
 	const session = await auth();
 	const stocks = await getStocks();
-	let portfolio: Portfolio = {};
-	let portfolioValue = 0;
-
-	if (session && session.user && session.user.id) {
-		portfolio = await getPortfolio(session?.user?.id);
-		portfolioValue = getPortfolioValue(stocks, portfolio);
-	}
 
 	return (
 		<>
@@ -84,10 +46,7 @@ export default async function HomePage() {
 				}
 			>
 				{session?.user ? (
-					<SideBar
-						session={session}
-						portfolioValue={portfolioValue.toFixed(2)}
-					/>
+					<SideBar session={session} portfolioValue={'0.00'} />
 				) : (
 					''
 				)}

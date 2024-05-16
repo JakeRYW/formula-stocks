@@ -22,3 +22,5 @@ interface PortfolioStock {
 	id: string;
 	price: number;
 }
+
+export type TradeOptions = 'buy' | 'sell';

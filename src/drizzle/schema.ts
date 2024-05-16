@@ -6,7 +6,6 @@ import {
 	integer,
 	numeric,
 	pgEnum,
-	jsonb,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
 
@@ -16,13 +15,16 @@ export const users = pgTable('user', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
-	name: text('name'),
+	name: text('name').unique(),
 	email: text('email').notNull(),
 	emailVerified: timestamp('emailVerified', { mode: 'date' }),
 	image: text('image'),
 	role: roleEnum('role').default('user').notNull(),
 	balance: numeric('balance').default('100000'),
-	portfolio: jsonb('portfolio').default({}),
+	date_added: timestamp('date_added', { mode: 'string' }).defaultNow(),
+	updated_at: timestamp('updated_at')
+		.defaultNow()
+		.$onUpdate(() => new Date()),
 });
 
 export const accounts = pgTable(
@@ -51,7 +53,7 @@ export const accounts = pgTable(
 
 export const stocks = pgTable('stocks', {
 	id: text('id').notNull().primaryKey(),
-	symbol: text('symbol').notNull(),
+	symbol: text('symbol').unique().notNull(),
 	name: text('name').notNull(),
 	price: numeric('price').notNull(),
 	change_1hr: numeric('change_1hr'),
@@ -71,3 +73,41 @@ export const stocks = pgTable('stocks', {
 		.defaultNow()
 		.$onUpdate(() => new Date()),
 });
+
+export const transactions = pgTable('transactions', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	userId: text('userId')
+		.notNull()
+		.references(() => users.id),
+	stockId: text('stockId')
+		.notNull()
+		.references(() => stocks.id),
+	transaction_type: text('transaction_type', {
+		enum: ['buy', 'sell'],
+	}).notNull(),
+	quantity: integer('quantity').notNull(),
+	total_price: numeric('total_price'),
+	created_at: timestamp('date_added', { mode: 'string' }).defaultNow(),
+});
+
+export const portfolio = pgTable(
+	'portfolio',
+	{
+		userId: text('userId')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		stockId: text('stockId')
+			.notNull()
+			.references(() => stocks.id, { onDelete: 'cascade' })
+			.unique(),
+		quantity: integer('quantity'),
+		updated_at: timestamp('updated_at')
+			.defaultNow()
+			.$onUpdate(() => new Date()),
+	},
+	(t) => ({
+		primaryKey: primaryKey({ columns: [t.userId, t.stockId] }),
+	})
+);
