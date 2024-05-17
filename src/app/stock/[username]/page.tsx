@@ -1,29 +1,12 @@
-import StreamerView from './components/StreamerView';
-import OrderMenu from './components/order-menu';
+import StockCard from './components/stock-card';
+import OrderCard from './components/order-card';
 import { db } from '@/lib/db';
 import { users } from '@/drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { Session } from 'next-auth';
 import { headers } from 'next/headers';
-
-interface StreamerViewProps {
-	username: string;
-}
-
-interface UserInfo {
-	name: string;
-	symbol: string;
-	status?: string;
-	stream: {
-		viewer_count?: number;
-		game?: string;
-	};
-	title?: string;
-	description?: string;
-	follower_count?: number;
-	tags: string[];
-}
+import { getStockQuantity } from '@/app/actions/actions';
 
 async function getStock(username: string) {
 	try {
@@ -76,7 +59,7 @@ async function getBalance() {
 	}
 }
 
-export default async function StreamerPage({
+export default async function StockPage({
 	params,
 }: {
 	params: { username: string };
@@ -85,18 +68,25 @@ export default async function StreamerPage({
 	const stock = await getStock(params.username);
 	const changeData = await getChangeData(params.username);
 	const balance = await getBalance();
+	const stockQuantity = await getStockQuantity(stock[0].id);
 
 	return (
 		<>
 			<div className='flex flex-row justify-center mt-10 mb-20'>
-				<StreamerView
+				<StockCard
 					stock={stock[0]}
 					changeData={changeData !== null ? changeData[0] : null}
 				/>
 				<div className='ml-5'>
 					{session ? (
-						<OrderMenu stock={stock[0]} balance={balance} />
-					) : null}
+						<OrderCard
+							stock={stock[0]}
+							balance={balance}
+							quantity={stockQuantity}
+						/>
+					) : (
+						''
+					)}
 				</div>
 			</div>
 		</>
