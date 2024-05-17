@@ -1,4 +1,4 @@
-import { transaction } from '@/app/actions/actions';
+import { transaction, getStockQuantity } from '@/app/actions/actions';
 import { Button } from '@/components/ui/button';
 import { TradeOptions } from '@/types';
 import { Loader2 } from 'lucide-react';
@@ -8,6 +8,7 @@ interface OrderFormProps {
 	stockId: number;
 	buyingPower: number;
 	price: number;
+	quantity: number;
 	tradeOption: TradeOptions;
 }
 
@@ -16,6 +17,7 @@ export const OrderForm = ({
 	buyingPower,
 	price,
 	tradeOption,
+	quantity,
 }: OrderFormProps) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [sharesToBuy, setSharesToBuy] = useState(0);
@@ -52,8 +54,7 @@ export const OrderForm = ({
 			const maxAmount = Math.trunc(buyingPower / (price * (1 + 0.0025)));
 			setSharesToBuy(maxAmount);
 		} else {
-			// TODO set to amount owned
-			//setSharesToSell()
+			setSharesToSell(quantity);
 		}
 	}
 
@@ -173,7 +174,8 @@ export const OrderForm = ({
 				<div className='mt-6'>
 					<Button
 						disabled={
-							price * sharesToBuy > buyingPower ||
+							price * sharesToBuy + price * sharesToBuy * 0.0025 >
+								buyingPower ||
 							sharesToBuy <= 0 ||
 							isLoading
 						}
@@ -197,9 +199,7 @@ export const OrderForm = ({
 			<div className='mt-5'>
 				<p className='text-sm text-gray-600'>Shares Owned</p>
 				<div className='border-b border-gray-400 border-dotted'>
-					<p className='mt-[.125rem] mb-[.25rem] '>{`${Number(
-						43
-					).toLocaleString()}`}</p>
+					<p className='mt-[.125rem] mb-[.25rem] '>{`${quantity}`}</p>
 				</div>
 			</div>
 			<div className='mt-5'>
@@ -267,7 +267,11 @@ export const OrderForm = ({
 			<div className='mt-6'>
 				<Button
 					// TODO Add limit on going over shares owned
-					disabled={sharesToSell <= 0 || isLoading}
+					disabled={
+						sharesToSell > quantity ||
+						sharesToSell <= 0 ||
+						isLoading
+					}
 					className='w-full'
 					onClick={handleSell}
 				>

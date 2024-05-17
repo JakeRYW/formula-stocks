@@ -7,9 +7,10 @@ import { OrderForm } from './order-form';
 interface OrderCardProps {
 	stock: Stock;
 	balance: number;
+	quantity: number;
 }
 
-const OrderCard = ({ stock, balance }: OrderCardProps) => {
+const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 	const [tradeOption, setTradeOption] = useState<TradeOptions>('buy');
 
 	function handleChangeTradeOption(tradeOption: TradeOptions) {
@@ -46,6 +47,7 @@ const OrderCard = ({ stock, balance }: OrderCardProps) => {
 					price={stock.price}
 					buyingPower={balance}
 					tradeOption={tradeOption}
+					quantity={quantity}
 				/>
 			</div>
 		</div>

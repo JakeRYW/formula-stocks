@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { Session } from 'next-auth';
 import { headers } from 'next/headers';
+import { getStockQuantity } from '@/app/actions/actions';
 
 async function getStock(username: string) {
 	try {
@@ -67,6 +68,7 @@ export default async function StockPage({
 	const stock = await getStock(params.username);
 	const changeData = await getChangeData(params.username);
 	const balance = await getBalance();
+	const stockQuantity = await getStockQuantity(stock[0].id);
 
 	return (
 		<>
@@ -77,7 +79,11 @@ export default async function StockPage({
 				/>
 				<div className='ml-5'>
 					{session ? (
-						<OrderCard stock={stock[0]} balance={balance} />
+						<OrderCard
+							stock={stock[0]}
+							balance={balance}
+							quantity={stockQuantity}
+						/>
 					) : (
 						''
 					)}
