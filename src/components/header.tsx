@@ -5,7 +5,14 @@ import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 
-import { ClipboardList, FolderClock, LogIn, Moon, Trophy } from 'lucide-react';
+import {
+	ClipboardList,
+	FolderClock,
+	LogIn,
+	Moon,
+	Shield,
+	Trophy,
+} from 'lucide-react';
 import {
 	BarChart2,
 	Folder,
@@ -36,8 +43,8 @@ interface HeaderProps {
 	session: Session | null;
 }
 
-export default function Header({ session: data }: HeaderProps) {
-	const username = data?.user?.name;
+export default function Header({ session }: HeaderProps) {
+	const username = session?.user?.name;
 
 	const { setTheme, theme } = useTheme();
 	const [loginModal, setLoginModal] = useState(false);
@@ -93,7 +100,7 @@ export default function Header({ session: data }: HeaderProps) {
 							</div>
 							<div className='flex flex-row items-center justify-end'>
 								<div className='flex items-center'>
-									{data ? (
+									{session ? (
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
 												<div>
@@ -101,7 +108,8 @@ export default function Header({ session: data }: HeaderProps) {
 														<Avatar className='cursor-pointer select-none'>
 															<AvatarImage
 																src={
-																	data?.user
+																	session
+																		?.user
 																		?.image ??
 																	undefined
 																}
@@ -250,6 +258,25 @@ export default function Header({ session: data }: HeaderProps) {
 														Settings
 													</Link>
 												</DropdownMenuItem>
+												{session.user.role ===
+												'admin' ? (
+													<DropdownMenuItem asChild>
+														<Link
+															className='flex flex-row items-center'
+															href={
+																'/admin/dashboard'
+															}
+														>
+															<Shield
+																width={20}
+																className='mr-2'
+															/>
+															Admin
+														</Link>
+													</DropdownMenuItem>
+												) : (
+													''
+												)}
 												<Separator />
 												<DropdownMenuItem>
 													<Moon
@@ -283,7 +310,7 @@ export default function Header({ session: data }: HeaderProps) {
 																<Avatar className='cursor-pointer select-none'>
 																	<AvatarImage
 																		src={
-																			data
+																			session
 																				?.user
 																				?.image ??
 																			undefined
