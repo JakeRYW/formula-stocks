@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 
 interface SideBarProps {
 	session: Session | null;
-	portfolioValue: string;
+	portfolioValue: number;
 }
 
 async function getBalance(session: Session | null) {
