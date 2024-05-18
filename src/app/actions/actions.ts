@@ -100,6 +100,28 @@ export async function getStockQuantity(stockId: string) {
 	return portfolioResult[0].quantity;
 }
 
+export async function getPortfolioValue() {
+	const session = await auth();
+
+	if (!session || !session.user || !session.user.id) return null;
+
+	const portfolioResult = await db
+		.select({
+			quantity: portfolio.quantity,
+			price: stocks.price,
+		})
+		.from(portfolio)
+		.innerJoin(stocks, eq(portfolio.stockId, stocks.id));
+
+	let totalAmount = 0;
+
+	for (let stock of portfolioResult) {
+		totalAmount += stock.price * stock.quantity;
+	}
+
+	return Math.round(totalAmount * 100) / 100;
+}
+
 export async function setBalance(username: string, amount: number) {
 	console.log(`Setting balance to ${amount}`);
 

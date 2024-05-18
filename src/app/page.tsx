@@ -4,6 +4,8 @@ import StreamerCard from '@/components/streamer-card';
 
 import { auth } from '@/lib/auth';
 import { convertPercentage } from '@/lib/utils';
+import { getPortfolioValue } from './actions/actions';
+import { Stock } from '@/types';
 
 let fetchingError: boolean = false;
 
@@ -24,6 +26,7 @@ async function getStocks() {
 export default async function HomePage() {
 	const session = await auth();
 	const stocks = await getStocks();
+	const portfolioValue = await getPortfolioValue();
 
 	return (
 		<>
@@ -46,7 +49,12 @@ export default async function HomePage() {
 				}
 			>
 				{session?.user ? (
-					<SideBar session={session} portfolioValue={'0.00'} />
+					<SideBar
+						session={session}
+						portfolioValue={
+							portfolioValue === null ? 0 : portfolioValue
+						}
+					/>
 				) : (
 					''
 				)}
