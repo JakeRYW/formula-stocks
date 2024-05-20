@@ -7,6 +7,7 @@ import { auth } from '@/lib/auth';
 import { Session } from 'next-auth';
 import { headers } from 'next/headers';
 import { getStockQuantity } from '@/app/actions/actions';
+import { Toaster } from '@/components/ui/toaster';
 
 async function getStock(username: string) {
 	try {
@@ -89,6 +90,7 @@ export default async function StockPage({
 					)}
 				</div>
 			</div>
+			<Toaster />
 		</>
 	);
 }

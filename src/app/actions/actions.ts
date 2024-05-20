@@ -47,17 +47,11 @@ export async function transaction(
 	try {
 		const session = await auth();
 
-		if (!session || !session.user || !session.user.id) return null;
+		if (!session || !session.user || !session.user.id) throw Error;
 
 		console.log(
 			`User ${session?.user.name} submitted ${type} order for ${amount} shares of stock: ${stockId}`
 		);
-
-		//const currentQuantity = await getStockQuantity(stockId);
-
-		// if (type === 'sell' && amount > currentQuantity) {
-		// 	throw Error;
-		// }
 
 		const transactionRecord = await db.insert(transactions).values({
 			userId: session.user.id,
@@ -67,13 +61,15 @@ export async function transaction(
 		});
 
 		return {
-			message: 'Transaction successful!',
+			success: `You have successfully ${
+				type === 'buy' ? 'bought' : 'sold'
+			} ${amount} ${amount > 1 ? 'shares!' : 'share!'}`,
 		};
 	} catch (error) {
 		console.error('Error performing transaction');
 		console.log(error);
 		return {
-			message: "Couldn't perform transaction",
+			error: 'There was a problem with your transaction.',
 		};
 	}
 }

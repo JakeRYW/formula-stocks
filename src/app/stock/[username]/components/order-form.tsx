@@ -1,11 +1,18 @@
-import { transaction, getStockQuantity } from '@/app/actions/actions';
-import { Button } from '@/components/ui/button';
+'use client';
+
+import { transaction } from '@/app/actions/actions';
 import { TradeOptions } from '@/types';
+
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+
+import { useRef, useState, useTransition } from 'react';
 
 interface OrderFormProps {
 	stockId: number;
+	stockSymbol: string;
 	buyingPower: number;
 	price: number;
 	quantity: number;
@@ -14,14 +21,68 @@ interface OrderFormProps {
 
 export const OrderForm = ({
 	stockId,
+	stockSymbol,
 	buyingPower,
 	price,
 	tradeOption,
 	quantity,
 }: OrderFormProps) => {
-	const [isLoading, setIsLoading] = useState(false);
 	const [sharesToBuy, setSharesToBuy] = useState(0);
 	const [sharesToSell, setSharesToSell] = useState(0);
+
+	const buyInputRef = useRef<HTMLInputElement>(null);
+	const sellInputRef = useRef<HTMLInputElement>(null);
+
+	const [isPending, startTransition] = useTransition();
+	const { toast } = useToast();
+
+	const handleTransaction = () => {
+		startTransition(() => {
+			transaction(
+				stockId,
+				tradeOption === 'buy' ? sharesToBuy : sharesToSell,
+				tradeOption
+			).then((data) => {
+				if (data.error) {
+					toast({
+						className: 'mt-2',
+						variant: 'destructive',
+						title: 'Uh oh! Something went wrong.',
+						description: data.error,
+					});
+					return;
+				}
+
+				toast({
+					className: 'mt-2',
+					title: `${
+						tradeOption === 'buy'
+							? 'Buy order filled'
+							: 'Sell order filled'
+					}`,
+					description: (
+						<>
+							{formatTransactionMessage()}{' '}
+							<span className='font-bold'>{stockSymbol}</span>
+							{'!'}
+						</>
+					),
+				});
+			});
+		});
+	};
+
+	function formatTransactionMessage() {
+		if (tradeOption === 'buy') {
+			return `You have successfully bought ${sharesToBuy} ${
+				sharesToBuy > 1 ? 'shares' : 'share'
+			} of`;
+		} else {
+			return `You have successfully sold ${sharesToSell} ${
+				sharesToSell > 1 ? 'shares' : 'share'
+			} of`;
+		}
+	}
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = Number(e.target.value);
@@ -58,24 +119,6 @@ export const OrderForm = ({
 		}
 	}
 
-	async function handleBuy() {
-		setIsLoading(true);
-		transaction(stockId, sharesToBuy, 'buy');
-		setTimeout(() => {
-			setIsLoading(false);
-			setSharesToBuy(0);
-		}, 1500);
-	}
-
-	async function handleSell() {
-		setIsLoading(true);
-		transaction(stockId, sharesToSell, 'sell');
-		setTimeout(() => {
-			setIsLoading(false);
-			setSharesToSell(0);
-		}, 1500);
-	}
-
 	if (tradeOption === 'buy') {
 		return (
 			<>
@@ -92,14 +135,54 @@ export const OrderForm = ({
 				</div>
 				<div className='mt-5'>
 					<p className='text-sm text-gray-600'>Shares to buy</p>
-					<input
-						onChange={handleChange}
-						onKeyDown={handleKeyDown}
-						type='number'
-						className='px-3 py-2 border border-gray-300 rounded-md'
-						value={sharesToBuy > 0 ? sharesToBuy : ''}
-					/>
-
+					<div className='relative'>
+						<input
+							className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+							type='number'
+							onChange={handleChange}
+							onKeyDown={handleKeyDown}
+							value={sharesToBuy > 0 ? sharesToBuy : ''}
+							ref={buyInputRef}
+						/>
+						<div className='absolute right-2 bottom-1 hidden peer-hover:block peer-focus:block hover:block'>
+							<div className='flex flex-row items-center'>
+								<Button
+									className='p-0 h-8 w-8 rounded-none rounded-l-md'
+									variant={'outline'}
+									size={'sm'}
+									onClick={() => {
+										setSharesToBuy(0);
+										buyInputRef.current?.focus();
+									}}
+								>
+									X
+								</Button>
+								<div className='flex flex-col'>
+									<Button
+										className='p-0 h-4 w-4 rounded-none rounded-tr-md'
+										variant={'outline'}
+										size={'sm'}
+										onClick={() =>
+											setSharesToBuy(sharesToBuy + 1)
+										}
+									>
+										<RiArrowUpSLine />
+									</Button>
+									<Button
+										className='p-0 h-4 w-4 rounded-none rounded-br-md'
+										variant={'outline'}
+										size={'sm'}
+										onClick={() => {
+											if (sharesToBuy > 0)
+												setSharesToBuy(sharesToBuy - 1);
+										}}
+									>
+										<RiArrowDownSLine />
+									</Button>
+								</div>
+							</div>
+						</div>
+					</div>
 					<div className='mt-1'>
 						<Button
 							onClick={() => handleQuickChange(1)}
@@ -177,17 +260,17 @@ export const OrderForm = ({
 							price * sharesToBuy + price * sharesToBuy * 0.0025 >
 								buyingPower ||
 							sharesToBuy <= 0 ||
-							isLoading
+							isPending
 						}
 						className='w-full'
-						onClick={handleBuy}
+						onClick={handleTransaction}
 					>
-						{isLoading ? (
+						{isPending ? (
 							<Loader2 className='w-4 h-4 mr-2 animate-spin' />
 						) : (
 							''
 						)}
-						{isLoading ? 'Buying' : 'Buy'}
+						{isPending ? 'Buying' : 'Buy'}
 					</Button>
 				</div>
 			</>
@@ -204,14 +287,54 @@ export const OrderForm = ({
 			</div>
 			<div className='mt-5'>
 				<p className='text-sm text-gray-600'>Shares to sell</p>
-				<input
-					onChange={handleChange}
-					onKeyDown={handleKeyDown}
-					type='number'
-					className='px-3 py-2 border border-gray-300 rounded-md'
-					value={sharesToSell > 0 ? sharesToSell : ''}
-				/>
-
+				<div className='relative'>
+					<input
+						className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+						type='number'
+						onChange={handleChange}
+						onKeyDown={handleKeyDown}
+						value={sharesToSell > 0 ? sharesToSell : ''}
+						ref={sellInputRef}
+					/>
+					<div className='absolute right-2 bottom-1 hidden peer-hover:block peer-focus:block hover:block'>
+						<div className='flex flex-row items-center'>
+							<Button
+								className='p-0 h-8 w-8 rounded-none rounded-l-md'
+								variant={'outline'}
+								size={'sm'}
+								onClick={() => {
+									setSharesToSell(0);
+									sellInputRef.current?.focus();
+								}}
+							>
+								X
+							</Button>
+							<div className='flex flex-col'>
+								<Button
+									className='p-0 h-4 w-4 rounded-none rounded-tr-md'
+									variant={'outline'}
+									size={'sm'}
+									onClick={() =>
+										setSharesToSell(sharesToSell + 1)
+									}
+								>
+									<RiArrowUpSLine />
+								</Button>
+								<Button
+									className='p-0 h-4 w-4 rounded-none rounded-br-md'
+									variant={'outline'}
+									size={'sm'}
+									onClick={() => {
+										if (sharesToSell > 0)
+											setSharesToSell(sharesToSell - 1);
+									}}
+								>
+									<RiArrowDownSLine />
+								</Button>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div className='mt-1'>
 					<Button
 						onClick={() => handleQuickChange(1)}
@@ -266,21 +389,20 @@ export const OrderForm = ({
 			</div>
 			<div className='mt-6'>
 				<Button
-					// TODO Add limit on going over shares owned
 					disabled={
 						sharesToSell > quantity ||
 						sharesToSell <= 0 ||
-						isLoading
+						isPending
 					}
 					className='w-full'
-					onClick={handleSell}
+					onClick={handleTransaction}
 				>
-					{isLoading ? (
+					{isPending ? (
 						<Loader2 className='w-4 h-4 mr-2 animate-spin' />
 					) : (
 						''
 					)}
-					{isLoading ? 'Selling' : 'Sell'}
+					{isPending ? 'Selling' : 'Sell'}
 				</Button>
 			</div>
 		</>

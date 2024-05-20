@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { addOrdinalSuffix } from '@/lib/utils';
 
 import Chart from '@/components/chart';
+import TrackLoadingSpinner from '@/components/track-loading';
 
 interface StockCardProps {
 	stock: Stock;
@@ -123,13 +124,14 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 						<div className='mt-5 border border-b-0 h-[30rem]'>
 							{/* LOADING SPINNER */}
 							{changeData === null ? (
-								<div className='relative top-[45%] left-[45%]'>
-									<div
+								<div className='relative top-48'>
+									<TrackLoadingSpinner />
+									{/* <div
 										className='inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]'
 										role='status'
 									>
 										<span className='!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]'></span>
-									</div>
+									</div> */}
 								</div>
 							) : (
 								<Chart
