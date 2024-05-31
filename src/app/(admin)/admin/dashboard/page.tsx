@@ -9,14 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import {
-	Activity,
-	BarChart3,
-	CreditCard,
-	DollarSign,
-	LineChart,
-	Users,
-} from 'lucide-react';
+import { Activity, CreditCard, LineChart, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AdminTable from '../components/admin-table/admin-table';
 import StockTable from '../components/dashboard';
@@ -98,9 +91,9 @@ export default async function AdminPage() {
 						</CardContent>
 					</Card>
 				</div>
-				<div className='grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3'>
+				<div className='grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-4'>
 					<Card
-						className='xl:col-span-2'
+						className='xl:col-span-3'
 						x-chunk='dashboard-01-chunk-4'
 					>
 						<CardHeader className='flex flex-row items-center'>
