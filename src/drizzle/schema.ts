@@ -14,13 +14,14 @@ export const roleEnum = pgEnum('role', ['admin', 'user']);
 export const users = pgTable('user', {
 	id: text('id')
 		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	name: text('name').unique(),
+		.$defaultFn(() => crypto.randomUUID())
+		.$type<String>(),
+	name: text('name').unique().$type<String>(),
 	email: text('email').notNull(),
 	emailVerified: timestamp('emailVerified', { mode: 'date' }),
 	image: text('image'),
 	role: roleEnum('role').default('user').notNull(),
-	balance: numeric('balance').default('100000'),
+	balance: numeric('balance').default('100000').$type<number>(),
 	date_added: timestamp('date_added', { mode: 'string' }).defaultNow(),
 	updated_at: timestamp('updated_at')
 		.defaultNow()
@@ -55,19 +56,19 @@ export const stocks = pgTable('stocks', {
 	id: text('id').notNull().primaryKey(),
 	symbol: text('symbol').unique().notNull(),
 	name: text('name').notNull(),
-	price: numeric('price').notNull(),
-	change_1hr: numeric('change_1hr'),
-	change_24hr: numeric('change_24hr'),
-	change_1wk: numeric('change_1wk'),
-	change_1mth: numeric('change_1mth'),
-	change_all: numeric('change_all'),
-	team: text('team'),
-	country: text('country'),
-	points: integer('points'),
-	championship_pos: numeric('championship_pos'),
-	color: text('color'),
-	category: text('category'),
-	avatar: text('avatar'),
+	price: numeric('price').notNull().default('0'),
+	change_1hr: numeric('change_1hr').notNull().default('0'),
+	change_24hr: numeric('change_24hr').notNull().default('0'),
+	change_1wk: numeric('change_1wk').notNull().default('0'),
+	change_1mth: numeric('change_1mth').notNull().default('0'),
+	change_all: numeric('change_all').notNull().default('0'),
+	team: text('team').notNull(),
+	country: text('country').notNull(),
+	points: integer('points').notNull(),
+	championship_pos: integer('championship_pos').notNull().default(0),
+	color: text('color').notNull(),
+	category: text('category').notNull(),
+	image: text('image').notNull(),
 	date_added: timestamp('date_added', { mode: 'string' }).defaultNow(),
 	updated_at: timestamp('updated_at')
 		.defaultNow()
@@ -89,7 +90,7 @@ export const transactions = pgTable('transactions', {
 	}).notNull(),
 	quantity: integer('quantity').notNull(),
 	total_price: numeric('total_price'),
-	created_at: timestamp('date_added', { mode: 'string' }).defaultNow(),
+	created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
 });
 
 export const portfolio = pgTable(
@@ -100,8 +101,7 @@ export const portfolio = pgTable(
 			.references(() => users.id, { onDelete: 'cascade' }),
 		stockId: text('stockId')
 			.notNull()
-			.references(() => stocks.id, { onDelete: 'cascade' })
-			.unique(),
+			.references(() => stocks.id, { onDelete: 'cascade' }),
 		quantity: integer('quantity'),
 		updated_at: timestamp('updated_at')
 			.defaultNow()

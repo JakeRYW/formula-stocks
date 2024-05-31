@@ -1,16 +1,20 @@
 export interface Stock {
-	id: number;
+	id: string;
 	name: string;
-	price: number;
+	price: string;
 	symbol: string;
-	avatar: string;
+	image: string;
 	country: string;
 	category: string;
 	color: string;
 	championship_pos: number;
 	team: string;
 	points: number;
-	change_1hr: number;
+	change_1hr: string;
+	change_24hr: string;
+	change_1wk: string;
+	change_1mth: string;
+	change_all: string;
 }
 
 export interface Portfolio {
