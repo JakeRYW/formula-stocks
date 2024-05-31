@@ -6,14 +6,6 @@ import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 
 import {
-	ClipboardList,
-	FolderClock,
-	LogIn,
-	Moon,
-	Shield,
-	Trophy,
-} from 'lucide-react';
-import {
 	BarChart2,
 	Folder,
 	Home,
@@ -21,23 +13,28 @@ import {
 	UserRound,
 	LogOut,
 	Settings,
+	ClipboardList,
+	FolderClock,
+	LogIn,
+	Moon,
+	Shield,
+	Trophy,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-import { Separator } from './ui/separator';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ModeToggle } from './mode-toggle';
+import { Separator } from './ui/separator';
 
-import { useState } from 'react';
-import { LoginModal } from './login-modal';
+import { LoginButton } from './login-button';
+import { ModeToggle } from './mode-toggle';
 
 interface HeaderProps {
 	session: Session | null;
@@ -45,35 +42,29 @@ interface HeaderProps {
 
 export default function Header({ session }: HeaderProps) {
 	const username = session?.user?.name;
+	const image = session?.user?.image;
 
-	const { setTheme, theme } = useTheme();
-	const [loginModal, setLoginModal] = useState(false);
+	const { theme, setTheme } = useTheme();
 
-	const handleThemeChange = () => {
-		if (theme === 'dark') {
-			setTheme('light');
-		} else {
-			setTheme('dark');
-		}
+	const toggleTheme = () => {
+		if (theme === 'dark') setTheme('light');
+		if (theme === 'light') setTheme('dark');
 	};
 
 	return (
 		<>
-			<div>
-				{loginModal ? (
-					<LoginModal setShowLoginModal={setLoginModal} />
-				) : (
-					''
-				)}
-			</div>
 			<header className='sticky top-0 z-40'>
 				<div className='relative z-50 bg-formulared shadow-md drop-shadow-md '>
 					<nav className='flex justify-between p-6 bg-formulared'>
-						<div className='flex items-center flex-shrink-0 mr-6 text-white'>
-							<BarChart2 />
-							<span className='ml-2 text-xl font-semibold tracking-tight'>
-								FormulaStocks
-							</span>
+						<div className='flex items-center flex-shrink-0 mr-6'>
+							<Link href={'/'}>
+								<div className='flex text-white'>
+									<BarChart2 />
+									<span className='ml-2 text-xl font-semibold tracking-tight'>
+										FormulaStocks
+									</span>
+								</div>
+							</Link>
 						</div>
 						<div className='flex-grow w-full lg:items-center lg:w-auto lg:flex'>
 							<div className='text-md hidden lg:block lg:flex-grow'>
@@ -137,6 +128,10 @@ export default function Header({ session }: HeaderProps) {
 												className='w-48'
 												align='end'
 											>
+												<DropdownMenuLabel>
+													{username}
+												</DropdownMenuLabel>
+												<DropdownMenuSeparator />
 												<div className='lg:hidden'>
 													<DropdownMenuItem asChild>
 														<Link
@@ -278,12 +273,22 @@ export default function Header({ session }: HeaderProps) {
 													''
 												)}
 												<Separator />
-												<DropdownMenuItem>
-													<Moon
-														width={20}
-														className='mr-2'
-													/>
-													Dark Theme
+												<DropdownMenuItem
+													onClick={(e) => {
+														e.preventDefault();
+														toggleTheme();
+													}}
+												>
+													<div className='flex flex-row items-center'>
+														<Moon
+															width={20}
+															className='mr-2'
+														/>
+														Dark Theme
+														<div className='absolute right-0'>
+															<ModeToggle mode='switch' />
+														</div>
+													</div>
 												</DropdownMenuItem>
 												<Separator />
 
@@ -310,9 +315,7 @@ export default function Header({ session }: HeaderProps) {
 																<Avatar className='cursor-pointer select-none'>
 																	<AvatarImage
 																		src={
-																			session
-																				?.user
-																				?.image ??
+																			image ??
 																			undefined
 																		}
 																	/>
@@ -396,33 +399,27 @@ export default function Header({ session }: HeaderProps) {
 															Dark Theme
 														</DropdownMenuItem>
 														<Separator />
-
-														<DropdownMenuItem
-															onClick={() =>
-																setLoginModal(
-																	true
-																)
-															}
-														>
-															<LogIn
-																width={20}
-																className='mr-2'
-															/>
-															Log In
-														</DropdownMenuItem>
+														<LoginButton mode='redirect'>
+															<DropdownMenuItem>
+																<LogIn
+																	width={20}
+																	className='mr-2'
+																/>
+																Log In
+															</DropdownMenuItem>
+														</LoginButton>
 													</DropdownMenuContent>
 												</DropdownMenu>
 											</div>
 											<div className='hidden lg:justify-end lg:flex'>
-												<Button
-													variant={'outline'}
-													className='bg-formulared text-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white'
-													onClick={() =>
-														setLoginModal(true)
-													}
-												>
-													Login
-												</Button>
+												<LoginButton mode='modal'>
+													<Button
+														variant={'outline'}
+														className='bg-formulared text-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white'
+													>
+														Login
+													</Button>
+												</LoginButton>
 											</div>
 										</>
 									)}
