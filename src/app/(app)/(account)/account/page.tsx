@@ -1,6 +1,6 @@
 import { auth } from '@/lib/auth';
 import { Separator } from '@/components/ui/separator';
-import { ProfileForm } from '@/app/(account)/account/profile-form';
+import { ProfileForm } from './profile-form';
 
 export default async function AccountPage() {
 	const session = await auth();
