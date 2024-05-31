@@ -11,7 +11,7 @@ import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { useRef, useState, useTransition } from 'react';
 
 interface OrderFormProps {
-	stockId: number;
+	stockId: string;
 	stockSymbol: string;
 	buyingPower: number;
 	price: number;

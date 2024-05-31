@@ -5,6 +5,7 @@ import Header from '@/components/header';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { auth } from '@/lib/auth';
+import SideBar from '@/components/side-bar';
 
 const inter = Inter({ subsets: ['latin'] });
 

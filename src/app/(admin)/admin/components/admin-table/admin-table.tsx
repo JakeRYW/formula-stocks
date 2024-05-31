@@ -69,7 +69,7 @@ const AdminTable = ({ data, setData }) => {
 		<div className=''>
 			<div className='flex items-center py-4'>
 				<Input
-					placeholder='Search streamers...'
+					placeholder='Search drivers...'
 					value={
 						(table.getColumn('name')?.getFilterValue() as string) ??
 						''

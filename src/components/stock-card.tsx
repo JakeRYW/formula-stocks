@@ -4,33 +4,26 @@ import { ArrowUpRightFromSquare, Trophy } from 'lucide-react';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { addOrdinalSuffix } from '@/lib/utils';
+import { addOrdinalSuffix, convertPercentage } from '@/lib/utils';
+import { Stock } from '@/types';
 
-interface StreamerCardProps {
-	username: string;
-	streamerSymbol: string;
-	price: number;
-	priceChange: number;
-	percentage: number;
-	profile_img: string;
-	points: number;
-	championship_pos: number;
-	category: string;
-	color: string;
+interface StockCardProps {
+	stock: Stock;
 }
 
-export default function StreamerCard({
-	username,
-	streamerSymbol,
-	price,
-	priceChange,
-	percentage,
-	points,
-	championship_pos,
-	profile_img,
-	category,
-	color,
-}: StreamerCardProps) {
+export default function StockCard({ stock }: StockCardProps) {
+	const {
+		name,
+		symbol,
+		price,
+		change_24hr,
+		championship_pos,
+		points,
+		category,
+		color,
+		image,
+	} = stock;
+
 	return (
 		<>
 			<div>
@@ -43,27 +36,27 @@ export default function StreamerCard({
 							className='w-[1.70rem]'
 							width={27.2}
 							height={27.2}
-							src={profile_img}
-							alt={username}
+							src={image}
+							alt={name}
 						/>
 
 						<Link
 							className='z-30 flex items-center'
-							href={`stock/${username
+							href={`stock/${name
 								.replace(' ', '-')
 								.toLowerCase()}`}
 						>
 							<h3 className='ml-2 mt-[-0.25rem] text-xl font-semibold'>
-								{username}
+								{name}
 							</h3>
 
 							<p className='ml-2 -mt-5 text-sm'>
-								{streamerSymbol.toUpperCase()}
+								{symbol.toUpperCase()}
 							</p>
 						</Link>
 						<a
 							className='-z-0 ml-auto -mt-3 -mr-3 '
-							href={`http://twitch.com/${username}`}
+							href={`#`}
 							target='_blank'
 							rel='noreferrer'
 						>
@@ -77,16 +70,19 @@ export default function StreamerCard({
 
 						<p
 							className={`font-semibold -mt-1 ${
-								priceChange > 0
+								Number(change_24hr) >= 0
 									? 'text-green-600'
 									: 'text-red-700'
 							}`}
 						>
 							{`${
-								priceChange > 0
-									? '$' + priceChange
-									: '-$' + Math.abs(priceChange)
-							} (%${percentage.toFixed(2)})`}
+								Number(change_24hr) >= 0
+									? '$' + Number(change_24hr)
+									: '-$' + Math.abs(Number(change_24hr))
+							} (%${convertPercentage(
+								Number(price),
+								Number(change_24hr)
+							).toFixed(2)})`}
 							<span className='text-sm text-black opacity-50 dark:text-white'>
 								{' past day'}
 							</span>
@@ -101,7 +97,7 @@ export default function StreamerCard({
 									strokeWidth={2.0}
 								/>
 								<span className='font-semibold'>
-									{addOrdinalSuffix(championship_pos)}
+									{addOrdinalSuffix(Number(championship_pos))}
 								</span>
 							</div>
 						</div>

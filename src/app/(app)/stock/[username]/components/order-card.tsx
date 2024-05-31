@@ -45,7 +45,7 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 				<OrderForm
 					stockId={stock.id}
 					stockSymbol={stock.symbol}
-					price={stock.price}
+					price={Number(stock.price)}
 					buyingPower={balance}
 					tradeOption={tradeOption}
 					quantity={quantity}

@@ -1,12 +1,9 @@
 import StockCard from './components/stock-card';
 import OrderCard from './components/order-card';
-import { db } from '@/lib/db';
-import { users } from '@/drizzle/schema';
-import { eq } from 'drizzle-orm';
+
 import { auth } from '@/lib/auth';
-import { Session } from 'next-auth';
-import { headers } from 'next/headers';
-import { getStockQuantity } from '@/app/actions/actions';
+import { getBalanceById, getStockQuantity } from '@/app/actions/actions';
+
 import { Toaster } from '@/components/ui/toaster';
 
 async function getStock(username: string) {
@@ -39,27 +36,6 @@ async function getChangeData(username: string) {
 	}
 }
 
-async function getBalance() {
-	try {
-		// const account = await db
-		// 	.select()
-		// 	.from(users)
-		// 	.where(eq(users.id, session.user.id));
-
-		// return account[0].balance;
-
-		const res = await fetch(`http://localhost:3000/api/account`, {
-			headers: new Headers(headers()),
-		});
-
-		const data = await res.json();
-
-		return data.balance;
-	} catch (error) {
-		console.error('Failed to fetch account data from the server!', error);
-	}
-}
-
 export default async function StockPage({
 	params,
 }: {
@@ -68,8 +44,9 @@ export default async function StockPage({
 	const session = await auth();
 	const stock = await getStock(params.username);
 	const changeData = await getChangeData(params.username);
-	const balance = await getBalance();
-	const stockQuantity = await getStockQuantity(stock[0].id);
+
+	const balance = session ? await getBalanceById(session?.user.id) : 0;
+	const stockQuantity = session ? await getStockQuantity(stock[0].id) : 0;
 
 	return (
 		<>
@@ -78,17 +55,17 @@ export default async function StockPage({
 					stock={stock[0]}
 					changeData={changeData !== null ? changeData[0] : null}
 				/>
-				<div className='ml-5'>
-					{session ? (
+				{session && balance !== null && stockQuantity !== null ? (
+					<div className='ml-5'>
 						<OrderCard
 							stock={stock[0]}
-							balance={balance}
+							balance={Number(balance)}
 							quantity={stockQuantity}
 						/>
-					) : (
-						''
-					)}
-				</div>
+					</div>
+				) : (
+					''
+				)}
 			</div>
 			<Toaster />
 		</>

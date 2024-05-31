@@ -4,10 +4,10 @@ import { Session } from 'next-auth';
 import { db } from '@/lib/db';
 import { users } from '@/drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { getPortfolioValue } from '@/app/actions/actions';
 
 interface SideBarProps {
 	session: Session | null;
-	portfolioValue: number;
 }
 
 async function getBalance(session: Session | null) {
@@ -25,11 +25,10 @@ async function getBalance(session: Session | null) {
 	}
 }
 
-export default async function SideBar({
-	session,
-	portfolioValue,
-}: SideBarProps) {
+export default async function SideBar({ session }: SideBarProps) {
 	const balance = await getBalance(session);
+	const portfolioValue = await getPortfolioValue();
+	const netWorth = Number(balance) + Number(portfolioValue);
 
 	return (
 		<>
@@ -40,9 +39,7 @@ export default async function SideBar({
 							<div className='flex items-center gap-5 px-3 py-4 text-primary'>
 								<Landmark className='h-6 w-6' />
 								<div>
-									<p>{`$${(
-										Number(balance) + Number(portfolioValue)
-									).toLocaleString(undefined, {
+									<p>{`$${netWorth.toLocaleString(undefined, {
 										minimumFractionDigits: 2,
 									})}`}</p>
 									<p className='text-muted-foreground font-semibold text-xs'>
@@ -82,21 +79,21 @@ export default async function SideBar({
 								<div>
 									<p
 										className={`${
-											Number(balance) >= 100000
+											netWorth >= 100000
 												? 'text-green-600'
 												: 'text-red-700'
 										}`}
 									>{`${
-										Number(balance) >= 100000
+										netWorth >= 100000
 											? '$' +
 											  (
-													Number(balance) - 100000
+													netWorth - 100000
 											  )?.toLocaleString(undefined, {
 													minimumFractionDigits: 2,
 											  })
 											: '-$' +
 											  Math.abs(
-													Number(balance) - 100000
+													netWorth - 100000
 											  )?.toLocaleString(undefined, {
 													minimumFractionDigits: 2,
 											  })
