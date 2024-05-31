@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowUpRightFromSquare, Trophy } from 'lucide-react';
-
+import { ArrowUpRightFromSquare, LayoutList, Trophy } from 'lucide-react';
+import { IoPodiumOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import Image from 'next/image';
 import { addOrdinalSuffix, convertPercentage } from '@/lib/utils';
@@ -91,10 +91,10 @@ export default function StockCard({ stock }: StockCardProps) {
 					<div className='flex flex-row'>
 						<div className='px-4 py-1 mt-5 rounded-full bg-slate-200 w-fit dark:bg-[#3b3b3b]'>
 							<div className='flex items-center'>
-								<Trophy
+								<IoPodiumOutline
 									className='mr-1 -ml-1'
 									size={16}
-									strokeWidth={2.0}
+									strokeWidth={20}
 								/>
 								<span className='font-semibold'>
 									{addOrdinalSuffix(Number(championship_pos))}
@@ -115,7 +115,7 @@ export default function StockCard({ stock }: StockCardProps) {
 						</div>
 						<div className='px-4 py-1 ml-3 mt-5 rounded-full bg-slate-200 w-fit dark:bg-[#3b3b3b]'>
 							<div className='flex items-center'>
-								<Trophy
+								<LayoutList
 									className='mr-1 -ml-1'
 									size={16}
 									strokeWidth={2.0}
