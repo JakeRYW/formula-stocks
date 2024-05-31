@@ -6,13 +6,19 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function convertPercentage(currentPrice: number, change: number) {
-	return Math.abs(
-		((currentPrice - (currentPrice - change)) / (currentPrice - change)) *
-			100
-	);
+	if (currentPrice === 0 && change === 0) return 0;
+
+	const originalPrice = currentPrice - change;
+
+	if (originalPrice === 0) {
+		return 100;
+	}
+
+	return Math.abs(((originalPrice - currentPrice) / currentPrice) * 100);
 }
 
 export function addOrdinalSuffix(number: number) {
+	if (number === 0) return '0';
 	let numStr = number.toString();
 	let lastDigit = parseInt(numStr[numStr.length - 1]);
 
