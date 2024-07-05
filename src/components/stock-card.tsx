@@ -65,7 +65,11 @@ export default function StockCard({ stock }: StockCardProps) {
 					</div>
 					<div className='flex flex-col'>
 						<p className='mt-3 text-lg font-semibold'>
-							${Number(price).toFixed(2)}
+							$
+							{Number(price).toLocaleString(undefined, {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}
 						</p>
 
 						<p
