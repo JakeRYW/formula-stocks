@@ -125,7 +125,7 @@ export default function Header({ session }: HeaderProps) {
 												</div>
 											</DropdownMenuTrigger>
 											<DropdownMenuContent
-												className='w-48'
+												className='w-48 bg-card'
 												align='end'
 											>
 												<DropdownMenuLabel>
