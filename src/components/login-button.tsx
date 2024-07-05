@@ -25,7 +25,7 @@ export function LoginButton({
 		return (
 			<Dialog>
 				<DialogTrigger asChild>{children}</DialogTrigger>
-				<DialogContent className='p-0 w-auto bg-transparent border-none'>
+				<DialogContent className='p-0 w-auto bg-transparent border-none shadow-none'>
 					<LoginForm />
 				</DialogContent>
 			</Dialog>

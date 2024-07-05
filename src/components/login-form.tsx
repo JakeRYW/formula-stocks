@@ -25,8 +25,6 @@ export function LoginForm() {
 			? 'Email already in use with different provider'
 			: '';
 
-	console.log('URLERROR', searchParams.get('error'));
-
 	return (
 		<>
 			<div className='min-h-[calc(100vh-88px)] flex items-center justify-center '>
