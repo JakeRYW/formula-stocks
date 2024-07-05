@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Stock, TradeOptions } from '@/types';
 import { OrderForm } from './order-form';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface OrderCardProps {
 	stock: Stock;
@@ -20,38 +22,42 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 	}
 
 	return (
-		<div className='px-4 py-5 bg-white rounded-md shadow-lg h-fit'>
-			<div>
-				<button
-					onClick={() => handleChangeTradeOption('buy')}
-					className={`px-5 py-3 border border-gray-200 rounded-l-md ${
-						tradeOption !== 'buy'
-							? 'bg-white text-gray-500'
-							: 'bg-gray-200'
-					}`}
-				>
-					Buy {stock.symbol}
-				</button>
-				<button
-					onClick={() => handleChangeTradeOption('sell')}
-					className={`px-5 py-3 border border-gray-200 rounded-r-md ${
-						tradeOption !== 'sell'
-							? 'bg-white text-gray-500'
-							: 'bg-gray-200'
-					}`}
-				>
-					Sell {stock.symbol}
-				</button>
-				<OrderForm
-					stockId={stock.id}
-					stockSymbol={stock.symbol}
-					price={Number(stock.price)}
-					buyingPower={balance}
-					tradeOption={tradeOption}
-					quantity={quantity}
-				/>
-			</div>
-		</div>
+		<>
+			<Card className='shadow-lg'>
+				<CardContent>
+					<div className='flex justify-center mt-6'>
+						<Button
+							onClick={() => handleChangeTradeOption('buy')}
+							className={`px-5 py-6 border border-gray-200 font-normal text-md rounded-r-none ${
+								tradeOption !== 'buy'
+									? 'bg-white text-gray-500 hover:bg-black/5'
+									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
+							}`}
+						>
+							Buy {stock.symbol}
+						</Button>
+						<Button
+							onClick={() => handleChangeTradeOption('sell')}
+							className={`px-5 py-6 border font-normal border-gray-200 text-md rounded-l-none ${
+								tradeOption !== 'sell'
+									? 'bg-white text-gray-500 hover:bg-black/5 dark:bg-black/5 hover:text-black'
+									: 'bg-gray-200 text-black hover:bg-gray-200'
+							}`}
+						>
+							Sell {stock.symbol}
+						</Button>
+					</div>
+					<OrderForm
+						stockId={stock.id}
+						stockSymbol={stock.symbol}
+						price={Number(stock.price)}
+						buyingPower={balance}
+						tradeOption={tradeOption}
+						quantity={quantity}
+					/>
+				</CardContent>
+			</Card>
+		</>
 	);
 };
 
