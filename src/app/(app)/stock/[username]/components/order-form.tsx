@@ -8,7 +8,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
-import { useRef, useState, useTransition } from 'react';
+import { useContext, useRef, useState, useTransition } from 'react';
+import { BalanceContext } from '@/components/balance-provider';
 
 interface OrderFormProps {
 	stockId: string;
@@ -29,12 +30,22 @@ export const OrderForm = ({
 }: OrderFormProps) => {
 	const [sharesToBuy, setSharesToBuy] = useState(0);
 	const [sharesToSell, setSharesToSell] = useState(0);
+	const [sharesOwned, setSharedOwned] = useState(quantity);
 
 	const buyInputRef = useRef<HTMLInputElement>(null);
 	const sellInputRef = useRef<HTMLInputElement>(null);
 
 	const [isPending, startTransition] = useTransition();
 	const { toast } = useToast();
+
+	const {
+		networth,
+		buyingPower: clientBuyingPower,
+		portfolioValue,
+		changeNetworth,
+		changeBuyingPower,
+		changePortfolioValue,
+	} = useContext(BalanceContext);
 
 	const handleTransaction = () => {
 		startTransition(() => {
@@ -68,6 +79,16 @@ export const OrderForm = ({
 						</>
 					),
 				});
+				changeBuyingPower(data.balance);
+				changePortfolioValue(data.portfolioValue);
+				changeNetworth(
+					Number(data.balance) + Number(data.portfolioValue)
+				);
+				setSharedOwned(
+					tradeOption === 'buy'
+						? sharesOwned + sharesToBuy
+						: sharesOwned - sharesToSell
+				);
 			});
 		});
 	};
@@ -112,10 +133,13 @@ export const OrderForm = ({
 
 	function handleMax() {
 		if (tradeOption === 'buy') {
-			const maxAmount = Math.trunc(buyingPower / (price * (1 + 0.0025)));
+			const maxAmount = Math.trunc(
+				(clientBuyingPower >= 0 ? clientBuyingPower : buyingPower) /
+					(price * (1 + 0.0025))
+			);
 			setSharesToBuy(maxAmount);
 		} else {
-			setSharesToSell(quantity);
+			setSharesToSell(sharesOwned);
 		}
 	}
 
@@ -123,10 +147,14 @@ export const OrderForm = ({
 		return (
 			<>
 				<div className='mt-5'>
-					<p className='text-sm text-gray-600'>Buying Power</p>
+					<p className='text-sm text-black/70 dark:text-white/70'>
+						Buying Power
+					</p>
 					<div className='border-b border-gray-400 border-dotted'>
 						<p className='mt-[.125rem] mb-[.25rem] '>{`$ ${Number(
-							buyingPower
+							clientBuyingPower >= 0
+								? clientBuyingPower
+								: buyingPower
 						).toLocaleString(undefined, {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2,
@@ -134,7 +162,9 @@ export const OrderForm = ({
 					</div>
 				</div>
 				<div className='mt-5'>
-					<p className='text-sm text-gray-600'>Shares to buy</p>
+					<p className='text-sm text-black/70 dark:text-white/70'>
+						Shares to buy
+					</p>
 					<div className='relative'>
 						<input
 							className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
@@ -217,7 +247,9 @@ export const OrderForm = ({
 					</div>
 				</div>
 				<div className='mt-4'>
-					<p className='text-sm text-gray-600'>Market Price</p>
+					<p className='text-sm text-black/70 dark:text-white/70'>
+						Market Price
+					</p>
 					<div className='border-b border-gray-400 border-dotted'>
 						<p className='mt-[.125rem] mb-[.25rem] '>{`$ ${Number(
 							price
@@ -228,7 +260,7 @@ export const OrderForm = ({
 					</div>
 				</div>
 				<div className='mt-5'>
-					<p className='text-sm text-gray-600'>
+					<p className='text-sm text-black/70 dark:text-white/70'>
 						Transaction Fee (0.25%)
 					</p>
 					<div className='border-b border-gray-400 border-dotted'>
@@ -243,7 +275,9 @@ export const OrderForm = ({
 					</div>
 				</div>
 				<div className='mt-5'>
-					<p className='text-sm text-gray-600'>Total Cost</p>
+					<p className='text-sm text-black/70 dark:text-white/70'>
+						Total Cost
+					</p>
 					<div className='border-b border-gray-400 border-dotted'>
 						<p className='mt-[.125rem] mb-[.25rem] '>{`$ ${(
 							sharesToBuy * price +
@@ -258,7 +292,9 @@ export const OrderForm = ({
 					<Button
 						disabled={
 							price * sharesToBuy + price * sharesToBuy * 0.0025 >
-								buyingPower ||
+								(clientBuyingPower >= 0
+									? clientBuyingPower
+									: buyingPower) ||
 							sharesToBuy <= 0 ||
 							isPending
 						}
@@ -280,13 +316,17 @@ export const OrderForm = ({
 	return (
 		<>
 			<div className='mt-5'>
-				<p className='text-sm text-gray-600'>Shares Owned</p>
+				<p className='text-sm text-black/70 dark:text-white/70'>
+					Shares Owned
+				</p>
 				<div className='border-b border-gray-400 border-dotted'>
-					<p className='mt-[.125rem] mb-[.25rem] '>{`${quantity}`}</p>
+					<p className='mt-[.125rem] mb-[.25rem] '>{`${sharesOwned}`}</p>
 				</div>
 			</div>
 			<div className='mt-5'>
-				<p className='text-sm text-gray-600'>Shares to sell</p>
+				<p className='text-sm text-black/70 dark:text-white/70'>
+					Shares to sell
+				</p>
 				<div className='relative'>
 					<input
 						className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
@@ -369,7 +409,9 @@ export const OrderForm = ({
 				</div>
 			</div>
 			<div className='mt-4'>
-				<p className='text-sm text-gray-600'>Market Price</p>
+				<p className='text-sm text-black/70 dark:text-white/70'>
+					Market Price
+				</p>
 				<div className='border-b border-gray-400 border-dotted'>
 					<p className='mt-[.125rem] mb-[.25rem] '>{`$ ${Number(
 						price
@@ -380,7 +422,9 @@ export const OrderForm = ({
 				</div>
 			</div>
 			<div className='mt-5'>
-				<p className='text-sm text-gray-600'>Total Value</p>
+				<p className='text-sm text-black/70 dark:text-white/70'>
+					Total Value
+				</p>
 				<div className='border-b border-gray-400 border-dotted'>
 					<p className='mt-[.125rem] mb-[.25rem] '>
 						{`$ ${(price * sharesToSell).toLocaleString()}`}
@@ -390,7 +434,7 @@ export const OrderForm = ({
 			<div className='mt-6'>
 				<Button
 					disabled={
-						sharesToSell > quantity ||
+						sharesToSell > sharesOwned ||
 						sharesToSell <= 0 ||
 						isPending
 					}

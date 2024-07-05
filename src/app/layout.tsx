@@ -6,6 +6,7 @@ import Header from '@/components/header';
 import { ThemeProvider } from '@/components/theme-provider';
 import { auth } from '@/lib/auth';
 import SideBar from '@/components/side-bar';
+import BalanceProvider from '@/components/balance-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,8 +29,10 @@ export default async function RootLayout({
 			</head>
 			<body className={inter.className}>
 				<ThemeProvider attribute='class' defaultTheme='light'>
-					<Header session={session} />
-					{children}
+					<BalanceProvider>
+						<Header session={session} />
+						{children}
+					</BalanceProvider>
 				</ThemeProvider>
 			</body>
 		</html>
