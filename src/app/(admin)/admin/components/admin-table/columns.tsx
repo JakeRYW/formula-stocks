@@ -102,7 +102,7 @@ export const columns: ColumnDef<Streamer>[] = [
 		cell: ({ row }) => {
 			return (
 				<div className='text-left pl-4'>
-					{row.getValue('category').toUpperCase()}
+					{row.getValue<String>('category').toUpperCase()}
 				</div>
 			);
 		},
@@ -119,35 +119,36 @@ export const columns: ColumnDef<Streamer>[] = [
 
 			const streamer = row.original;
 
-			async function handleDelete(id: string) {
-				const res = await fetch(
-					`http://localhost:3000/api/stocks/${id}`,
-					{
-						method: 'DELETE',
-					}
-				);
+			// ? Delete functionality - Not needed currently but may expand this in the future
+			// async function handleDelete(id: string) {
+			// 	const res = await fetch(
+			// 		`http://localhost:3000/api/stocks/${id}`,
+			// 		{
+			// 			method: 'DELETE',
+			// 		}
+			// 	);
 
-				if (res.ok) {
-					table.options.meta?.setData(
-						table.options.meta?.data.filter((row) => row.id !== id)
-					);
-				} else {
-					if (res.status === 404) {
-						toast({
-							variant: 'destructive',
-							title: 'Uh oh! Something went wrong.',
-							description: 'No streamer found.',
-						});
-					} else if (!res.ok) {
-						toast({
-							variant: 'destructive',
-							title: 'Uh oh! Something went wrong.',
-							description:
-								'There was a problem deleting the streamer.',
-						});
-					}
-				}
-			}
+			// 	if (res.ok) {
+			// 		table.options.meta?.setData(
+			// 			table.options.meta?.data.filter((row) => row.id !== id)
+			// 		);
+			// 	} else {
+			// 		if (res.status === 404) {
+			// 			toast({
+			// 				variant: 'destructive',
+			// 				title: 'Uh oh! Something went wrong.',
+			// 				description: 'No streamer found.',
+			// 			});
+			// 		} else if (!res.ok) {
+			// 			toast({
+			// 				variant: 'destructive',
+			// 				title: 'Uh oh! Something went wrong.',
+			// 				description:
+			// 					'There was a problem deleting the streamer.',
+			// 			});
+			// 		}
+			// 	}
+			// }
 
 			return (
 				<Dialog>
@@ -216,7 +217,7 @@ export const columns: ColumnDef<Streamer>[] = [
 								<Button
 									disabled={!confirmed}
 									variant={'destructive'}
-									onClick={() => handleDelete(streamer.id)}
+									// onClick={() => handleDelete(streamer.id)}
 								>{`Delete ${streamer.name}`}</Button>
 							</DialogClose>
 						</DialogFooter>
