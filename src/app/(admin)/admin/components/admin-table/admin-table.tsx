@@ -27,8 +27,14 @@ import '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { TableStock } from '@/types';
 
-const AdminTable = ({ data, setData }) => {
+type AdminTableProps = {
+	data: TableStock[];
+	setData: React.Dispatch<React.SetStateAction<TableStock[]>>;
+};
+
+const AdminTable = ({ data, setData }: AdminTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 

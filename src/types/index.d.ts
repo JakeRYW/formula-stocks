@@ -22,9 +22,18 @@ export interface Portfolio {
 		amount: number;
 	};
 }
+
 interface PortfolioStock {
 	id: string;
 	price: number;
+}
+
+export interface TableStock {
+	id: string;
+	name: string;
+	symbol: string;
+	price: string;
+	category: string;
 }
 
 export type TradeOptions = 'buy' | 'sell';

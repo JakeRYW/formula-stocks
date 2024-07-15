@@ -1,9 +1,14 @@
 'use client';
 
-import { Stock } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<Stock>[] = [
+type User = {
+	name: String | null;
+	netWorth: Number;
+	portfolioSize: Number;
+};
+
+export const columns: ColumnDef<User>[] = [
 	{
 		header: 'Rank',
 		cell: ({ row }) => {
@@ -33,9 +38,9 @@ export const columns: ColumnDef<Stock>[] = [
 		cell: ({ row }) => {
 			return (
 				<div>{`${row.getValue('portfolioSize')} ${
-					Number(row.getValue('portfolioSize')) > 1
-						? 'stocks'
-						: 'stock'
+					Number(row.getValue('portfolioSize')) === 1
+						? 'stock'
+						: 'stocks'
 				}`}</div>
 			);
 		},
