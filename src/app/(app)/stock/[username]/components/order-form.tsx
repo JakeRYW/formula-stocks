@@ -39,9 +39,7 @@ export const OrderForm = ({
 	const { toast } = useToast();
 
 	const {
-		networth,
 		buyingPower: clientBuyingPower,
-		portfolioValue,
 		changeNetworth,
 		changeBuyingPower,
 		changePortfolioValue,
@@ -79,11 +77,15 @@ export const OrderForm = ({
 						</>
 					),
 				});
-				changeBuyingPower(data.balance);
-				changePortfolioValue(data.portfolioValue);
+
+				if (data.balance) changeBuyingPower(data.balance);
+				if (data.portfolioValue)
+					changePortfolioValue(data.portfolioValue);
+
 				changeNetworth(
 					Number(data.balance) + Number(data.portfolioValue)
 				);
+
 				setSharedOwned(
 					tradeOption === 'buy'
 						? sharesOwned + sharesToBuy
