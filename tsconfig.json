@@ -21,12 +21,6 @@
 			"@/*": ["./src/*"]
 		}
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		"__tests__/add-stock-form.test.jsx"
-	],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }
