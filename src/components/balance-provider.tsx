@@ -1,6 +1,10 @@
 'use client';
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, ReactNode, useState } from 'react';
+
+type BalanceProviderProps = {
+	children: ReactNode;
+};
 
 export const BalanceContext = createContext({
 	networth: -1,
@@ -11,7 +15,7 @@ export const BalanceContext = createContext({
 	changePortfolioValue: (value: number) => {},
 });
 
-export default function BalanceProvider({ children }) {
+export default function BalanceProvider({ children }: BalanceProviderProps) {
 	const [networth, setNetworth] = useState(-1);
 	const [buyingPower, setBuyingPower] = useState(-1);
 	const [portfolioValue, setPortfolioValue] = useState(-1);
