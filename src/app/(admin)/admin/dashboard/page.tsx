@@ -1,6 +1,4 @@
-import { Toaster } from '@/components/ui/toaster';
 import { Stock } from '@/types';
-import Dashboard from '../components/dashboard';
 import { getStocks, getRecentTransactions } from '@/app/actions/actions';
 import {
 	Card,
@@ -11,22 +9,31 @@ import {
 } from '@/components/ui/card';
 import { Activity, CreditCard, LineChart, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import AdminTable from '../components/admin-table/admin-table';
 import StockTable from '../components/dashboard';
 
+// TODO Refactor this out to types folder
+//Trimmed down data for the stocks table
+interface TableStock {
+	id: string;
+	name: string;
+	symbol: string;
+	price: string;
+	category: string;
+}
+
 export default async function AdminPage() {
-	let stocks = await getStocks();
+	const stocks = await getStocks();
+	let formattedStocks: TableStock[] = [];
 	const recentTransactions = await getRecentTransactions(10);
 
 	//Only map the stock data if the API actually returned valid data
 	if (Object.keys(stocks).length !== 0) {
-		stocks = stocks.map((stock: Stock) => ({
+		formattedStocks = stocks.map((stock: Stock) => ({
 			id: stock.id,
 			name: stock.name,
 			symbol: stock.symbol,
 			price: stock.price,
 			category: stock.category,
-			dateAdded: new Date(stock.date_added).toLocaleDateString('en-us'),
 		}));
 	}
 
@@ -105,7 +112,7 @@ export default async function AdminPage() {
 							</div>
 						</CardHeader>
 						<CardContent>
-							<StockTable apiData={stocks} />
+							<StockTable stockData={formattedStocks} />
 						</CardContent>
 					</Card>
 					<Card>
@@ -117,7 +124,7 @@ export default async function AdminPage() {
 								<div className='flex items-center gap-4'>
 									<Avatar className='hidden h-9 w-9 sm:flex'>
 										<AvatarImage
-											src={transaction.image}
+											src={transaction.image || undefined}
 											alt='Avatar'
 										/>
 										<AvatarFallback>
@@ -162,11 +169,6 @@ export default async function AdminPage() {
 					</Card>
 				</div>
 			</main>
-			{/* <div className='flex flex-col items-center justify-center mt-10 mb-20'>
-        
-				<Dashboard apiData={stocks} />
-				<Toaster />
-			</div> */}
 		</>
 	);
 }

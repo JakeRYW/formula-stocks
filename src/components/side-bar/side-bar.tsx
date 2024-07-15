@@ -1,20 +1,15 @@
 import { Landmark, Folder, CreditCard, TrendingUp } from 'lucide-react';
-import { Session } from 'next-auth';
 
-import { db } from '@/lib/db';
-import { users } from '@/drizzle/schema';
-import { eq } from 'drizzle-orm';
 import { getPortfolioValue, getUserBalance } from '@/app/actions/actions';
-import BuyingPower, { Networth, PortfolioValue } from './balance/buying-power';
+import { BuyingPower } from './buying-power';
+import { Networth } from './net-worth';
+import { PortfolioValue } from './portfolio-value';
 
-interface SideBarProps {
-	session: Session | null;
-}
-
-export default async function SideBar({ session }: SideBarProps) {
+export default async function SideBar() {
 	const balance = await getUserBalance();
 	const portfolioValue = await getPortfolioValue();
 	const netWorth = Number(balance) + Number(portfolioValue);
+
 	return (
 		<>
 			<div className='hidden border-r md:block bg-white dark:bg-[#0c0c0c]'>
