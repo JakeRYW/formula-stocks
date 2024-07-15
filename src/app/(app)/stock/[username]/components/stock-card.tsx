@@ -22,14 +22,12 @@ interface StockCardProps {
 
 export default function StockCard({ stock, changeData }: StockCardProps) {
 	let currentPrice =
-		changeData !== null
-			? changeData.day[changeData.day.length - 1].y
-			: null;
+		changeData !== null ? changeData.day[changeData.day.length - 1].y : 0;
 	let firstPrice = changeData !== null ? changeData.day[0].y : null;
 	let currentChange =
 		changeData !== null
 			? changeData.day[changeData.day.length - 1].y - changeData.day[0].y
-			: null;
+			: 0;
 
 	const [hoveredPrice, setHoveredPrice] = useState(0);
 	const [isHovering, setIsHovering] = useState(false);
