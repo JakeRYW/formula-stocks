@@ -1,7 +1,6 @@
 import { getStocks } from '@/app/actions/actions';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
-import { Card, CardContent } from '@/components/ui/card';
 
 export default async function DriversPage() {
 	const stocks = await getStocks();

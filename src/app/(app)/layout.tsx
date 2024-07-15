@@ -1,4 +1,4 @@
-import SideBar from '@/components/side-bar';
+import SideBar from '@/components/side-bar/side-bar';
 import { auth } from '@/lib/auth';
 
 export default async function Layout({
@@ -18,7 +18,7 @@ export default async function Layout({
 							: 'grid min-h-[calc(100vh-88px)] w-full bg-[#fafafa] dark:bg-[#0c0c0c]'
 					}
 				>
-					{session?.user ? <SideBar session={session} /> : ''}
+					{session?.user ? <SideBar /> : ''}
 					{children}
 				</div>
 			</main>
