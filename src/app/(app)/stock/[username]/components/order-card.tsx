@@ -23,7 +23,7 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 
 	return (
 		<>
-			<Card className='shadow-lg'>
+			<Card>
 				<CardContent>
 					<div className='flex justify-center mt-6'>
 						<Button

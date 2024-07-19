@@ -38,7 +38,7 @@ export default async function StockPage({
 
 	return (
 		<>
-			<div className='flex flex-row justify-center mt-10 mb-20'>
+			<div className='flex flex-row justify-center mt-10'>
 				<StockCard
 					stock={stock}
 					changeData={changeData !== null ? changeData[0] : null}
