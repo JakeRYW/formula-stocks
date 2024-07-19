@@ -10,16 +10,7 @@ import {
 import { Activity, CreditCard, LineChart, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import StockTable from '../components/dashboard';
-
-// TODO Refactor this out to types folder
-//Trimmed down data for the stocks table
-interface TableStock {
-	id: string;
-	name: string;
-	symbol: string;
-	price: string;
-	category: string;
-}
+import { TableStock } from '@/types';
 
 export default async function AdminPage() {
 	const stocks = await getStocks();

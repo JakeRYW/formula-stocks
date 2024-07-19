@@ -29,17 +29,9 @@ import '@tanstack/react-table';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { TableStock } from '@/types';
 
-export type Streamer = {
-	id: string;
-	name: string;
-	symbol: string;
-	price: number;
-	category: string;
-	dateAdded: string;
-};
-
-export const columns: ColumnDef<Streamer>[] = [
+export const columns: ColumnDef<TableStock>[] = [
 	{
 		accessorKey: 'name',
 		header: ({ column }) => {

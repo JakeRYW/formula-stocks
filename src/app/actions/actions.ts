@@ -20,7 +20,7 @@ const UNDERLINE = '\u001b[4m';
 
 const RESET = '\u001b[0m';
 
-export async function fetchBalance(username: String) {
+export async function fetchBalance(username: string) {
 	const result = await db
 		.select({
 			balance: users.balance,
@@ -56,7 +56,7 @@ export async function getStocks() {
 	}
 }
 
-export async function getStockByName(stockName: String) {
+export async function getStockByName(stockName: string) {
 	const result = await db
 		.select()
 		.from(stocks)
@@ -65,7 +65,7 @@ export async function getStockByName(stockName: String) {
 	return result[0];
 }
 
-export async function getBalanceById(userId: String) {
+export async function getBalanceById(userId: string) {
 	const result = await db
 		.select({
 			balance: users.balance,
@@ -102,6 +102,7 @@ export async function getUserBalance() {
 				console.error(`Error in getUserBalance: ${error}`);
 				break;
 		}
+		return null;
 	}
 }
 

@@ -2,15 +2,7 @@
 
 import AdminTable from './admin-table/admin-table';
 import { useState } from 'react';
-
-// TODO Refactor this out to types folder
-type TableStock = {
-	id: string;
-	name: string;
-	symbol: string;
-	price: string;
-	category: string;
-};
+import { TableStock } from '@/types';
 
 type StockTableProps = {
 	stockData: TableStock[];

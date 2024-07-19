@@ -13,7 +13,7 @@ export const columns: ColumnDef<Stock>[] = [
 		accessorKey: 'symbol',
 		header: 'Symbol',
 		cell: ({ row }) => {
-			const symbol = row.getValue('symbol');
+			const symbol = row.getValue<String>('symbol');
 			return <div className='font-medium'>{symbol}</div>;
 		},
 	},
