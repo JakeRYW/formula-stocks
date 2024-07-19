@@ -1,5 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
+import { Stock } from '@/types';
+import { addOrdinalSuffix, convertPercentage } from '@/lib/utils';
+
 import {
 	MonitorPlay,
 	UsersRound,
@@ -8,12 +13,16 @@ import {
 	Text,
 } from 'lucide-react';
 
-import { Stock } from '@/types';
-import { useState } from 'react';
-import { addOrdinalSuffix } from '@/lib/utils';
-
-import Chart from '@/components/chart';
 import TrackLoadingSpinner from '@/components/track-loading';
+import RangeButtons from './range-buttons';
+import StockChart from '@/components/stock-chart';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 
 interface StockCardProps {
 	stock: Stock;
@@ -21,22 +30,20 @@ interface StockCardProps {
 }
 
 export default function StockCard({ stock, changeData }: StockCardProps) {
-	let currentPrice =
-		changeData !== null ? changeData.day[changeData.day.length - 1].y : 0;
-	let firstPrice = changeData !== null ? changeData.day[0].y : null;
+	//TODO Deal with changeData errors more gracefully - This works for now until refactor of this file
+	if (!changeData) return <ChartErrorCard stock={stock} />;
+
+	let currentPrice = changeData.day[changeData.day.length - 1].price;
+	let firstPrice = changeData.day[0].price;
 	let currentChange =
-		changeData !== null
-			? changeData.day[changeData.day.length - 1].y - changeData.day[0].y
-			: 0;
+		changeData.day[changeData.day.length - 1].price -
+		changeData.day[0].price;
 
 	const [hoveredPrice, setHoveredPrice] = useState(0);
 	const [isHovering, setIsHovering] = useState(false);
-	const [data, setData] = useState(
-		changeData !== null ? changeData.day : null
-	);
-	const [range, setRange] = useState(1);
+	const [data, setData] = useState(changeData !== null ? changeData.day : []);
 
-	function handleChangeChartTime(type: number) {
+	function handleRangeChange(type: number) {
 		switch (type) {
 			case 0:
 				setData(changeData.hour);
@@ -54,220 +61,258 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 				setData(changeData.all);
 				break;
 		}
-
-		setRange(type);
 	}
 
 	return (
-		<div>
-			<div className='flex flex-row justify-center'>
-				<div className='flex flex-row justify-center'>
-					<div className='px-10 py-5 bg-white shadow-lg max-w-[55rem] rounded-md dark:bg-[#1f1f1f]'>
-						<div className='flex flex-row items-center'>
-							<h1 className='text-3xl font-semibold'>
-								{stock.name}
-							</h1>
-							<p className='ml-3 text-xl font-semibold'>
-								{stock.symbol}
-							</p>
-						</div>
-						{changeData === null ? (
-							<></>
-						) : (
-							<div className='mt-4'>
-								<div>
-									<p className='text-3xl font-semibold'>
-										{isHovering
-											? `$${hoveredPrice}`
-											: `$${currentPrice.toFixed(2)}`}
-									</p>
-								</div>
-								<div className='mt-0'>
-									<p
-										className={`font-semibold text-md ${
-											isHovering
-												? hoveredPrice - firstPrice > 0
-													? 'text-green-600'
-													: 'text-red-600'
-												: currentChange > 0
-												? 'text-green-600'
-												: 'text-red-600'
-										}`}
-									>
-										{isHovering
-											? `${hoveredPrice - firstPrice > 0 ? '$' : '-$'}${(Math.abs(hoveredPrice - firstPrice)).toFixed(2)} (${(
+		<>
+			<Card className='max-w-2xl w-full h-fit'>
+				<CardHeader>
+					<CardTitle className='text-3xl flex flex-row items-center'>
+						{stock.name}
+						<span className='ml-3 text-xl font-semibold'>
+							{stock.symbol}
+						</span>
+					</CardTitle>
+					<CardDescription>
+						<p className='text-primary text-3xl font-semibold'>
+							{isHovering
+								? `$${hoveredPrice}`
+								: `$${currentPrice.toFixed(2)}`}
+						</p>
+						<div className='mt-0'>
+							<p
+								className={`font-semibold text-md ${
+									isHovering
+										? hoveredPrice - firstPrice > 0
+											? 'text-green-600'
+											: 'text-red-600'
+										: currentChange > 0
+										? 'text-green-600'
+										: 'text-red-600'
+								}`}
+							>
+								{isHovering
+									? `${hoveredPrice - firstPrice > 0 ? '$' : '-$'}${(Math.abs(hoveredPrice - firstPrice)).toFixed(2)} (${(
 										((hoveredPrice - firstPrice) /
 											firstPrice) *
 										100
 								  ).toFixed(2)}%)` //prettier-ignore
-											: `${
-													currentChange > 0
-														? '$'
-														: '-$'
-											  }${Math.abs(
-													currentChange
-											  ).toFixed(2)} (${(
-													((currentPrice -
-														firstPrice) /
-														firstPrice) *
-													100
-											  ).toFixed(2)}%)`}
-										<span className='text-black opacity-50 dark:text-white'>
-											{isHovering ? '' : ' past 24 hours'}
-										</span>
+									: `${
+											currentChange > 0 ? '$' : '-$'
+									  }${Math.abs(currentChange).toFixed(
+											2
+									  )} (${(
+											((currentPrice - firstPrice) /
+												firstPrice) *
+											100
+									  ).toFixed(2)}%)`}
+								<span className='text-black opacity-50 dark:text-white'>
+									{isHovering ? '' : ' past 24 hours'}
+								</span>
+							</p>
+						</div>
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className='border border-b-0 rounded-t-md'>
+						<StockChart
+							chartData={data}
+							setIsHovering={setIsHovering}
+							setHoveredPrice={setHoveredPrice}
+						/>
+					</div>
+					<RangeButtons handleRangeChange={handleRangeChange} />
+					<div className='mt-6'>
+						<div>
+							<h2 className='text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
+						</div>
+						<div className='flex flex-row mt-4'>
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<MonitorPlay />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>
+										{addOrdinalSuffix(
+											stock.championship_pos
+										)}
+									</p>
+									<p className='text-sm opacity-75'>
+										Championship Standing
 									</p>
 								</div>
 							</div>
-						)}
-						<div className='mt-5 border border-b-0 h-[30rem]'>
-							{/* LOADING SPINNER */}
-							{changeData === null ? (
-								<div className='relative top-48'>
-									<TrackLoadingSpinner />
-									{/* <div
-										className='inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]'
-										role='status'
-									>
-										<span className='!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]'></span>
-									</div> */}
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<UsersRound />
 								</div>
-							) : (
-								<Chart
-									changeData={data}
-									setIsHovering={setIsHovering}
-									setHoveredPrice={setHoveredPrice}
-								/>
-							)}
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.points}</p>
+									<p className='text-sm opacity-75'>Points</p>
+								</div>
+							</div>
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<Gamepad2 />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.category.toUpperCase()}</p>
+									<p className='text-sm opacity-75'>
+										Category
+									</p>
+								</div>
+							</div>
 						</div>
-						<div className='flex flex-row border border-t-0'>
-							<button
-								className={
-									range === 0
-										? 'px-6 py-3 mt-auto font-semibold text-black border-b-[3px] border-black'
-										: 'px-6 py-3 mt-auto font-semibold text-gray-500'
-								}
-								onClick={() => handleChangeChartTime(0)}
-							>
-								1H
-							</button>
-							<button
-								className={
-									range === 1
-										? 'px-6 py-3 mt-auto font-semibold text-black border-b-[3px] border-black'
-										: 'px-6 py-3 mt-auto font-semibold text-gray-500'
-								}
-								onClick={() => handleChangeChartTime(1)}
-							>
-								1D
-							</button>
-							<button
-								className={
-									range === 2
-										? 'px-6 py-3 mt-auto font-semibold text-black border-b-[3px] border-black'
-										: 'px-6 py-3 mt-auto font-semibold text-gray-500'
-								}
-								onClick={() => handleChangeChartTime(2)}
-							>
-								1W
-							</button>
-							<button
-								className={
-									range === 3
-										? 'px-6 py-3 mt-auto font-semibold text-black border-b-[3px] border-black'
-										: 'px-6 py-3 mt-auto font-semibold text-gray-500'
-								}
-								onClick={() => handleChangeChartTime(3)}
-							>
-								1M
-							</button>
-							<button
-								className={
-									range === 4
-										? 'px-6 py-3 mt-auto font-semibold text-black border-b-[3px] border-black'
-										: 'px-6 py-3 mt-auto font-semibold text-gray-500'
-								}
-								onClick={() => handleChangeChartTime(4)}
-							>
-								All
-							</button>
+						<div className='mt-2'>
+							<div className='flex flex-row w-full px-8'>
+								<div className='flex items-center justify-center text-center'>
+									<MessageSquareText />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.team}</p>
+									<p className='text-sm opacity-75'>Team</p>
+								</div>
+							</div>
 						</div>
-						<div className='mt-6'>
-							<div>
-								<h2 className='text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
-							</div>
-							{/*ROW*/}
-							<div className='flex flex-row mt-4'>
-								{/*BUTTON*/}
-								<div className='flex flex-row px-8 w-fit'>
-									<div className='flex items-center justify-center text-center'>
-										<MonitorPlay />
-									</div>
-									<div className='px-5 py-3 leading-5 text-md'>
-										<p>
-											{addOrdinalSuffix(
-												stock.championship_pos
-											)}
-										</p>
-										<p className='text-sm opacity-75'>
-											Championship Standing
-										</p>
-									</div>
+						<div className='mt-2'>
+							<div className='flex flex-row w-full px-8'>
+								<div className='flex items-center justify-center text-center'>
+									<Text />
 								</div>
-								{/*BUTTON*/}
-								<div className='flex flex-row px-8 w-fit'>
-									<div className='flex items-center justify-center text-center'>
-										<UsersRound />
-									</div>
-									<div className='px-5 py-3 leading-5 text-md'>
-										<p>{stock.points}</p>
-										<p className='text-sm opacity-75'>
-											Points
-										</p>
-									</div>
-								</div>
-								{/*BUTTON*/}
-								<div className='flex flex-row px-8 w-fit'>
-									<div className='flex items-center justify-center text-center'>
-										<Gamepad2 />
-									</div>
-									<div className='px-5 py-3 leading-5 text-md'>
-										<p>{stock.category.toUpperCase()}</p>
-										<p className='text-sm opacity-75'>
-											Category
-										</p>
-									</div>
-								</div>
-							</div>
-							<div className='mt-2'>
-								<div className='flex flex-row w-full px-8'>
-									<div className='flex items-center justify-center text-center'>
-										<MessageSquareText />
-									</div>
-									<div className='px-5 py-3 leading-5 text-md'>
-										<p>{stock.team}</p>
-										<p className='text-sm opacity-75'>
-											Team
-										</p>
-									</div>
-								</div>
-							</div>
-							<div className='mt-2'>
-								<div className='flex flex-row w-full px-8'>
-									<div className='flex items-center justify-center text-center'>
-										<Text />
-									</div>
-									<div className='px-5 py-3 leading-5 text-md'>
-										<p>{stock.country}</p>
-										<p className='text-sm opacity-75'>
-											Country
-										</p>
-									</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.country}</p>
+									<p className='text-sm opacity-75'>
+										Country
+									</p>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
+				</CardContent>
+			</Card>
+		</>
+	);
+}
+
+interface ChartErrorCardProps {
+	stock: Stock;
+}
+
+function ChartErrorCard({ stock }: ChartErrorCardProps) {
+	return (
+		<>
+			<Card className='max-w-2xl w-full h-fit'>
+				<CardHeader>
+					<CardTitle className='text-3xl flex flex-row items-center'>
+						{stock.name}
+						<span className='ml-3 text-xl font-semibold'>
+							{stock.symbol}
+						</span>
+					</CardTitle>
+					<CardDescription>
+						<p className='text-primary text-3xl font-semibold'>
+							$
+							{Number(stock.price).toLocaleString(undefined, {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}
+						</p>
+
+						<p
+							className={`font-semibold -mt-1 ${
+								Number(stock.change_24hr) >= 0
+									? 'text-green-600'
+									: 'text-red-700'
+							}`}
+						>
+							{`${
+								Number(stock.change_24hr) >= 0
+									? '$' + Number(stock.change_24hr)
+									: '-$' + Math.abs(Number(stock.change_24hr))
+							} (%${convertPercentage(
+								Number(stock.price),
+								Number(stock.change_24hr)
+							).toFixed(2)})`}
+							<span className='text-sm text-black opacity-50 dark:text-white'>
+								{' past day'}
+							</span>
+						</p>
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className='border rounded-md h-[30rem]'>
+						<div className='relative top-36'>
+							<TrackLoadingSpinner />
+						</div>
+					</div>
+					<div className='mt-6'>
+						<div>
+							<h2 className='text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
+						</div>
+						<div className='flex flex-row mt-4'>
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<MonitorPlay />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>
+										{addOrdinalSuffix(
+											stock.championship_pos
+										)}
+									</p>
+									<p className='text-sm opacity-75'>
+										Championship Standing
+									</p>
+								</div>
+							</div>
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<UsersRound />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.points}</p>
+									<p className='text-sm opacity-75'>Points</p>
+								</div>
+							</div>
+							<div className='flex flex-row px-8 w-fit'>
+								<div className='flex items-center justify-center text-center'>
+									<Gamepad2 />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.category.toUpperCase()}</p>
+									<p className='text-sm opacity-75'>
+										Category
+									</p>
+								</div>
+							</div>
+						</div>
+						<div className='mt-2'>
+							<div className='flex flex-row w-full px-8'>
+								<div className='flex items-center justify-center text-center'>
+									<MessageSquareText />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.team}</p>
+									<p className='text-sm opacity-75'>Team</p>
+								</div>
+							</div>
+						</div>
+						<div className='mt-2'>
+							<div className='flex flex-row w-full px-8'>
+								<div className='flex items-center justify-center text-center'>
+									<Text />
+								</div>
+								<div className='px-5 py-3 leading-5 text-md'>
+									<p>{stock.country}</p>
+									<p className='text-sm opacity-75'>
+										Country
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+		</>
 	);
 }
