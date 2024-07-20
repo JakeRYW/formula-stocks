@@ -282,13 +282,17 @@ export async function getLeaderboardResults(limit: number) {
 			.select({
 				name: users.name,
 				netWorth: sql<number>`${users.balance} + COALESCE(sum(${portfolio.quantity} * ${stocks.price}), 0)`,
-				portfolioSize: sql<number>`count(${portfolio.userId})`,
+				portfolioSize: sql<number>`count(CASE WHEN ${portfolio.quantity} > 0 THEN 1 ELSE NULL END)`,
 			})
 			.from(users)
 			.leftJoin(portfolio, eq(users.id, portfolio.userId))
 			.leftJoin(stocks, eq(portfolio.stockId, stocks.id))
 			.groupBy(users.name, users.balance)
-			.orderBy(desc(sql<number>`count(${portfolio.userId})`))
+			.orderBy(
+				desc(
+					sql<number>`${users.balance} + COALESCE(sum(${portfolio.quantity} * ${stocks.price}), 0)`
+				)
+			)
 			.limit(limit);
 
 		return leaderboardResults;
