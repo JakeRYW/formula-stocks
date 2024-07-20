@@ -30,7 +30,7 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 							onClick={() => handleChangeTradeOption('buy')}
 							className={`px-5 py-6 border border-gray-200 font-normal text-md rounded-r-none ${
 								tradeOption !== 'buy'
-									? 'bg-white text-gray-500 hover:bg-black/5'
+									? 'bg-white text-gray-500 hover:bg-black/5 dark:bg-black/5'
 									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
 							}`}
 						>
@@ -40,8 +40,8 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 							onClick={() => handleChangeTradeOption('sell')}
 							className={`px-5 py-6 border font-normal border-gray-200 text-md rounded-l-none ${
 								tradeOption !== 'sell'
-									? 'bg-white text-gray-500 hover:bg-black/5 dark:bg-black/5 hover:text-black'
-									: 'bg-gray-200 text-black hover:bg-gray-200'
+									? 'bg-white text-gray-500 hover:bg-black dark:bg-black/5 hover:dark:text-gray-400 hover:dark:bg-black/20'
+									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
 							}`}
 						>
 							Sell {stock.symbol}

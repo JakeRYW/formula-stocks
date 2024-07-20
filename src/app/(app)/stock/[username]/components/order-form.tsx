@@ -179,8 +179,8 @@ export const OrderForm = ({
 						<div className='absolute right-2 bottom-1 hidden peer-hover:block peer-focus:block hover:block'>
 							<div className='flex flex-row items-center'>
 								<Button
-									className='p-0 h-8 w-8 rounded-none rounded-l-md'
-									variant={'outline'}
+									className='p-0 h-8 w-6 rounded-none rounded-l-md hover:bg-transparent text-stone-400'
+									variant={'ghost'}
 									size={'sm'}
 									onClick={() => {
 										setSharesToBuy(0);
@@ -191,8 +191,8 @@ export const OrderForm = ({
 								</Button>
 								<div className='flex flex-col'>
 									<Button
-										className='p-0 h-4 w-4 rounded-none rounded-tr-md'
-										variant={'outline'}
+										className='p-0 h-4 w-4 rounded-none rounded-tr-md hover:bg-transparent text-stone-400'
+										variant={'ghost'}
 										size={'sm'}
 										onClick={() =>
 											setSharesToBuy(sharesToBuy + 1)
@@ -201,8 +201,8 @@ export const OrderForm = ({
 										<RiArrowUpSLine />
 									</Button>
 									<Button
-										className='p-0 h-4 w-4 rounded-none rounded-br-md'
-										variant={'outline'}
+										className='p-0 h-4 w-4 rounded-none rounded-br-md hover:bg-transparent text-stone-400'
+										variant={'ghost'}
 										size={'sm'}
 										onClick={() => {
 											if (sharesToBuy > 0)
@@ -218,31 +218,31 @@ export const OrderForm = ({
 					<div className='mt-1'>
 						<Button
 							onClick={() => handleQuickChange(1)}
-							className='h-fit px-[0.55rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md'
+							className='h-fit px-[0.55rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md hover:dark:bg-white/10'
 						>
 							+1
 						</Button>
 						<Button
 							onClick={() => handleQuickChange(10)}
-							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md'
+							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md hover:dark:bg-white/10'
 						>
 							+10
 						</Button>
 						<Button
 							onClick={() => handleQuickChange(100)}
-							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md'
+							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md hover:dark:bg-white/10'
 						>
 							+100
 						</Button>
 						<Button
 							onClick={() => handleQuickChange(1000)}
-							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md'
+							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md hover:dark:bg-white/10'
 						>
 							+1000
 						</Button>
 						<Button
 							onClick={handleMax}
-							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md'
+							className='h-fit ml-[0.25rem] px-[0.41rem] py-[0.20rem] text-xs font-semibold text-white bg-black rounded-md hover:dark:bg-white/10'
 						>
 							MAX
 						</Button>
@@ -341,8 +341,8 @@ export const OrderForm = ({
 					<div className='absolute right-2 bottom-1 hidden peer-hover:block peer-focus:block hover:block'>
 						<div className='flex flex-row items-center'>
 							<Button
-								className='p-0 h-8 w-8 rounded-none rounded-l-md'
-								variant={'outline'}
+								className='p-0 h-8 w-8 rounded-none rounded-l-md border-none'
+								variant={'ghost'}
 								size={'sm'}
 								onClick={() => {
 									setSharesToSell(0);
