@@ -6,6 +6,8 @@ import {
 	integer,
 	numeric,
 	pgEnum,
+	doublePrecision,
+	serial,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
 
@@ -109,5 +111,20 @@ export const portfolio = pgTable(
 	},
 	(t) => ({
 		primaryKey: primaryKey({ columns: [t.userId, t.stockId] }),
+	})
+);
+
+export const history = pgTable(
+	'history',
+	{
+		id: serial('id'),
+		stockId: text('stockId')
+			.notNull()
+			.references(() => stocks.id, { onDelete: 'cascade' }),
+		price: doublePrecision('price'),
+		time: timestamp('time', { withTimezone: true }).notNull().defaultNow(),
+	},
+	(t) => ({
+		primaryKey: primaryKey({ columns: [t.id, t.time] }),
 	})
 );
