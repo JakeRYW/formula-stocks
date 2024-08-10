@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import { Stock } from '@/types';
 import { addOrdinalSuffix, convertPercentage } from '@/lib/utils';
@@ -16,13 +16,8 @@ import {
 import TrackLoadingSpinner from '@/components/track-loading';
 import RangeButtons from './range-buttons';
 import StockChart from '@/components/stock-chart';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ErrorMessage from '@/components/error-message';
 
 interface StockCardProps {
 	stock: Stock;
@@ -33,11 +28,13 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 	//TODO Deal with changeData errors more gracefully - This works for now until refactor of this file
 	if (!changeData) return <ChartErrorCard stock={stock} />;
 
-	let currentPrice = changeData.day[changeData.day.length - 1].price;
-	let firstPrice = changeData.day[0].price;
-	let currentChange =
-		changeData.day[changeData.day.length - 1].price -
-		changeData.day[0].price;
+	let currentPrice =
+		changeData.day.length !== 0
+			? changeData.day[changeData.day.length - 1].price
+			: Number(stock.price);
+	let firstPrice =
+		changeData.day.length !== 0 ? changeData.day[0].price : currentPrice;
+	let currentChange = currentPrice - firstPrice;
 
 	const [hoveredPrice, setHoveredPrice] = useState(0);
 	const [isHovering, setIsHovering] = useState(false);
@@ -63,6 +60,10 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 		}
 	}
 
+	const memoizedData = useMemo(() => data, [data]);
+	const memoizedSetIsHovering = useMemo(() => setIsHovering, []);
+	const memoizedSetHoveredPrice = useMemo(() => setHoveredPrice, []);
+
 	return (
 		<>
 			<Card className='max-w-2xl w-full h-fit'>
@@ -73,7 +74,9 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 							{stock.symbol}
 						</span>
 					</CardTitle>
-					<CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className='-mt-4 mb-5'>
 						<p className='text-primary text-3xl font-semibold'>
 							{isHovering
 								? `$${hoveredPrice}`
@@ -93,10 +96,10 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 							>
 								{isHovering
 									? `${hoveredPrice - firstPrice > 0 ? '$' : '-$'}${(Math.abs(hoveredPrice - firstPrice)).toFixed(2)} (${(
-										((hoveredPrice - firstPrice) /
-											firstPrice) *
-										100
-								  ).toFixed(2)}%)` //prettier-ignore
+                                        ((hoveredPrice - firstPrice) /
+                                        firstPrice) *
+                                        100
+                                    ).toFixed(2)}%)` //prettier-ignore
 									: `${
 											currentChange > 0 ? '$' : '-$'
 									  }${Math.abs(currentChange).toFixed(
@@ -111,16 +114,21 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 								</span>
 							</p>
 						</div>
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className='border border-b-0 rounded-t-md'>
-						<StockChart
-							chartData={data}
-							setIsHovering={setIsHovering}
-							setHoveredPrice={setHoveredPrice}
-						/>
 					</div>
+					<div className='border border-b-0 rounded-t-md min-h-[22rem]'>
+						{memoizedData.length === 0 ? (
+							<div className='relative top-24'>
+								<TrackLoadingSpinner />
+							</div>
+						) : (
+							<StockChart
+								chartData={memoizedData}
+								setIsHovering={memoizedSetIsHovering}
+								setHoveredPrice={memoizedSetHoveredPrice}
+							/>
+						)}
+					</div>
+
 					<RangeButtons handleRangeChange={handleRangeChange} />
 					<div className='mt-6'>
 						<div>
@@ -209,7 +217,9 @@ function ChartErrorCard({ stock }: ChartErrorCardProps) {
 							{stock.symbol}
 						</span>
 					</CardTitle>
-					<CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className='-mt-4 mb-5'>
 						<p className='text-primary text-3xl font-semibold'>
 							$
 							{Number(stock.price).toLocaleString(undefined, {
@@ -237,12 +247,14 @@ function ChartErrorCard({ stock }: ChartErrorCardProps) {
 								{' past day'}
 							</span>
 						</p>
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
+					</div>
 					<div className='border rounded-md h-[30rem]'>
-						<div className='relative top-36'>
-							<TrackLoadingSpinner />
+						<div className='relative top-36 left-1/4'>
+							{/* <TrackLoadingSpinner /> */}
+							{/* <p>Error getting stock price graph</p> */}
+							<div className='w-1/2'>
+								<ErrorMessage />
+							</div>
 						</div>
 					</div>
 					<div className='mt-6'>
