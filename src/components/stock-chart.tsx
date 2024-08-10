@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
 	ChartConfig,
 	ChartContainer,
@@ -11,64 +11,87 @@ import { Separator } from './ui/separator';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 interface StockData {
-	date: string;
+	time: string;
 	price: number;
 }
 
 interface StockChartProps {
 	chartData: StockData[];
-	setIsHovering: Function;
-	setHoveredPrice: Function;
+	setIsHovering: (value: boolean) => void;
+	setHoveredPrice: (price: number) => void;
 }
 
-const StockChart = ({
-	chartData,
-	setIsHovering,
-	setHoveredPrice,
-}: StockChartProps) => {
-	const [hover, setHover] = useState(false);
+const StockChart = React.memo(
+	({ chartData, setIsHovering, setHoveredPrice }: StockChartProps) => {
+		if (chartData.length === 0)
+			return (
+				<>
+					<h1>Error</h1>
+				</>
+			);
 
-	const firstPrice = chartData[0].price;
-	const lastPrice = chartData[chartData.length - 1].price;
-	const priceChange = lastPrice - firstPrice;
-	const minPrice = Math.min(...chartData.map((item) => item.price));
-	const maxPrice = Math.max(...chartData.map((item) => item.price));
+		const [hover, setHover] = useState(false);
 
-	const chartConfig = {
-		date: {
-			label: 'Date',
-		},
-		price: {
-			label: 'Price',
-			color: '#60a5fa',
-		},
-	} satisfies ChartConfig;
+		const firstPrice = useMemo(() => chartData[0].price, [chartData]);
+		const lastPrice = useMemo(
+			() => chartData[chartData.length - 1].price,
+			[chartData]
+		);
+		const priceChange = useMemo(
+			() => lastPrice - firstPrice,
+			[firstPrice, lastPrice]
+		);
 
-	return (
-		<>
+		const minPrice = useMemo(
+			() => Math.min(...chartData.map((item) => item.price)),
+			[chartData]
+		);
+		const maxPrice = useMemo(
+			() => Math.max(...chartData.map((item) => item.price)),
+			[chartData]
+		);
+
+		const chartConfig = {
+			time: {
+				label: 'Date',
+			},
+			price: {
+				label: 'Price',
+				color: '#60a5fa',
+			},
+		} satisfies ChartConfig;
+
+		const handleMouseMove = useCallback(
+			(e) => {
+				if (e.activePayload) {
+					setHoveredPrice(
+						e.activePayload[0].payload.price.toFixed(2)
+					);
+				}
+			},
+			[setHoveredPrice]
+		);
+
+		const handleMouseEnter = useCallback(() => {
+			setIsHovering(true);
+			setHover(true);
+		}, [setIsHovering]);
+
+		const handleMouseLeave = useCallback(() => {
+			setIsHovering(false);
+			setHover(false);
+		}, [setIsHovering]);
+
+		return (
 			<ChartContainer config={chartConfig} className='h-full w-full'>
 				<AreaChart
-					onMouseMove={(e) => {
-						if (e.activePayload) {
-							setHoveredPrice(e.activePayload[0].payload.price);
-						}
-					}}
-					onMouseEnter={() => {
-						setIsHovering(true);
-						setHover(true);
-					}}
-					onMouseLeave={() => {
-						setIsHovering(false);
-						setHover(false);
-					}}
+					onMouseMove={handleMouseMove}
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
 					accessibilityLayer
 					className='transition-colors'
 					data={chartData}
-					margin={{
-						left: 0,
-						right: 0,
-						top: 0,
-					}}
+					margin={{ left: 0, right: 0, top: 0 }}
 				>
 					<defs>
 						<linearGradient
@@ -97,14 +120,13 @@ const StockChart = ({
 					<CartesianGrid strokeDasharray='3 3' />
 					<YAxis domain={[minPrice * 0.9, maxPrice * 1.1]} hide />
 					<XAxis
-						dataKey='date'
+						dataKey='time'
 						tickLine={false}
 						axisLine={false}
 						tickMargin={8}
 						minTickGap={32}
 						tickFormatter={(value) => {
-							const date = new Date(value * 1000);
-							return date.toLocaleDateString('en-US', {
+							return value.toLocaleDateString('en-US', {
 								month: 'short',
 								day: 'numeric',
 								hour: 'numeric',
@@ -117,14 +139,14 @@ const StockChart = ({
 						content={
 							<ChartTooltipContent
 								className='bg-card dark:bg-black'
-								labelKey='date'
+								labelKey='time'
 								indicator='line'
 								nameKey='price'
 								formatter={(value, name, item) => (
 									<div>
 										<span>
 											{new Date(
-												item.payload.date * 1000
+												item.payload.time
 											).toLocaleDateString('en-US', {
 												month: 'short',
 												day: 'numeric',
@@ -140,22 +162,25 @@ const StockChart = ({
 											<div className='ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground'>
 												{`$${value.toLocaleString(
 													undefined,
-													{ minimumFractionDigits: 2 }
+													{
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+													}
 												)}`}
 											</div>
 										</div>
 									</div>
 								)}
-								labelFormatter={(value) => {
-									return new Date(value).toLocaleDateString(
+								labelFormatter={(value) =>
+									new Date(value).toLocaleDateString(
 										'en-US',
 										{
 											month: 'short',
 											day: 'numeric',
 											year: 'numeric',
 										}
-									);
-								}}
+									)
+								}
 							/>
 						}
 					/>
@@ -171,8 +196,8 @@ const StockChart = ({
 					/>
 				</AreaChart>
 			</ChartContainer>
-		</>
-	);
-};
+		);
+	}
+);
 
 export default StockChart;
