@@ -1,8 +1,14 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { portfolio, stocks, transactions, users } from '@/drizzle/schema';
-import { and, desc, eq, ilike, sql } from 'drizzle-orm';
+import {
+	history,
+	portfolio,
+	stocks,
+	transactions,
+	users,
+} from '@/drizzle/schema';
+import { and, asc, desc, eq, ilike, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { TradeOptions } from '@/types';
 import { unstable_cache } from 'next/cache';
@@ -257,6 +263,76 @@ export async function setBalance(username: string, amount: number) {
 		.where(ilike(users.name, username));
 
 	console.log(result);
+}
+
+export async function getStockHistoryHour(stockName: string) {
+	const result = await db
+		.select({ price: history.price, time: history.time })
+		.from(history)
+		.innerJoin(stocks, eq(stocks.id, history.stockId))
+		.where(
+			and(
+				ilike(stocks.name, stockName),
+				sql`time > now() - INTERVAL '1 hour'`
+			)
+		)
+		.orderBy(asc(history.time));
+	return result;
+}
+
+export async function getStockHistoryDay(stockName: string) {
+	const result = await db
+		.select({ price: history.price, time: history.time })
+		.from(history)
+		.innerJoin(stocks, eq(stocks.id, history.stockId))
+		.where(
+			and(
+				ilike(stocks.name, stockName),
+				sql`time > now() - INTERVAL '1 day'`
+			)
+		)
+		.orderBy(asc(history.time));
+	return result;
+}
+
+export async function getStockHistoryWeek(stockName: string) {
+	const result = await db
+		.select({ price: history.price, time: history.time })
+		.from(history)
+		.innerJoin(stocks, eq(stocks.id, history.stockId))
+		.where(
+			and(
+				ilike(stocks.name, stockName),
+				sql`time > now() - INTERVAL '1 week'`
+			)
+		)
+		.orderBy(asc(history.time));
+	return result;
+}
+
+export async function getStockHistoryMonth(stockName: string) {
+	const result = await db
+		.select({ price: history.price, time: history.time })
+		.from(history)
+		.innerJoin(stocks, eq(stocks.id, history.stockId))
+		.where(
+			and(
+				ilike(stocks.name, stockName),
+				sql`time > now() - INTERVAL '1 month'`
+			)
+		)
+		.orderBy(asc(history.time));
+	return result;
+}
+
+export async function getStockHistoryAll(stockName: string) {
+	const result = await db
+		.select({ price: history.price, time: history.time })
+		.from(history)
+		.innerJoin(stocks, eq(stocks.id, history.stockId))
+		.where(ilike(stocks.name, stockName))
+		.orderBy(asc(history.time));
+	return result;
 }
 
 export async function getStockPrice(stockId: string) {
