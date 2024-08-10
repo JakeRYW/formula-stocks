@@ -32,7 +32,7 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 								tradeOption !== 'buy'
 									? 'bg-white text-gray-500 hover:bg-black/5 dark:bg-black/5'
 									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
-							}`}
+							}`}                
 						>
 							Buy {stock.symbol}
 						</Button>
@@ -40,7 +40,7 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 							onClick={() => handleChangeTradeOption('sell')}
 							className={`px-5 py-6 border font-normal border-gray-200 text-md rounded-l-none ${
 								tradeOption !== 'sell'
-									? 'bg-white text-gray-500 hover:bg-black dark:bg-black/5 hover:dark:text-gray-400 hover:dark:bg-black/20'
+									? 'bg-white text-gray-500 hover:bg-black/5 dark:hover:bg-black dark:bg-black/5 hover:dark:text-gray-400 hover:dark:bg-black/20'
 									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
 							}`}
 						>
