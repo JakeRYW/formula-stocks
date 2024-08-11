@@ -74,7 +74,7 @@ export const columns: ColumnDef<Stock>[] = [
 	},
 	{
 		accessorKey: 'championship_pos',
-		header: 'Championship Position',
+		header: 'Standings',
 		cell: ({ row }) => {
 			const pos: number = row.getValue('championship_pos');
 
