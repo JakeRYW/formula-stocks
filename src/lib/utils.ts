@@ -17,6 +17,14 @@ export function convertPercentage(currentPrice: number, change: number) {
 	return Math.abs(((originalPrice - currentPrice) / currentPrice) * 100);
 }
 
+export function getPriceChange(currentPrice: number, change: number) {
+	if (change >= 0) {
+		return currentPrice - currentPrice / (1 + change / 100);
+	} else {
+		return currentPrice - currentPrice / (1 - Math.abs(change) / 100);
+	}
+}
+
 export function addOrdinalSuffix(number: number) {
 	if (number === 0) return '0';
 	let numStr = number.toString();

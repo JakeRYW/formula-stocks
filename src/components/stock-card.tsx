@@ -1,10 +1,10 @@
 'use client';
 
-import { ArrowUpRightFromSquare, LayoutList, Trophy } from 'lucide-react';
+import { LayoutList, Trophy, MoreHorizontal } from 'lucide-react';
 import { IoPodiumOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import Image from 'next/image';
-import { addOrdinalSuffix, convertPercentage } from '@/lib/utils';
+import { addOrdinalSuffix, getPriceChange } from '@/lib/utils';
 import { Stock } from '@/types';
 
 interface StockCardProps {
@@ -60,7 +60,7 @@ export default function StockCard({ stock }: StockCardProps) {
 							target='_blank'
 							rel='noreferrer'
 						>
-							<ArrowUpRightFromSquare />
+							<MoreHorizontal />
 						</a>
 					</div>
 					<div className='flex flex-col'>
@@ -81,12 +81,19 @@ export default function StockCard({ stock }: StockCardProps) {
 						>
 							{`${
 								Number(change_24hr) >= 0
-									? '$' + Number(change_24hr)
-									: '-$' + Math.abs(Number(change_24hr))
-							} (%${convertPercentage(
-								Number(price),
-								Number(change_24hr)
-							).toFixed(2)})`}
+									? '$' +
+									  getPriceChange(
+											Number(price),
+											Number(change_24hr)
+									  ).toFixed(2)
+									: '-$' +
+									  Math.abs(
+											getPriceChange(
+												Number(price),
+												Number(change_24hr)
+											)
+									  ).toFixed(2)
+							} (%${Math.abs(Number(change_24hr)).toFixed(2)})`}
 							<span className='text-sm text-black opacity-50 dark:text-white'>
 								{' past day'}
 							</span>
