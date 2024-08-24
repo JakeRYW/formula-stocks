@@ -136,7 +136,7 @@ export default function Header({ session }: HeaderProps) {
 													<DropdownMenuItem asChild>
 														<Link
 															className='flex flex-row items-center'
-															href={'/account'}
+															href={'/'}
 														>
 															<Home
 																width={20}
@@ -148,7 +148,7 @@ export default function Header({ session }: HeaderProps) {
 													<DropdownMenuItem asChild>
 														<Link
 															className='flex flex-row items-center'
-															href={'/account'}
+															href={'/drivers'}
 														>
 															<UserRound
 																width={20}
@@ -160,7 +160,9 @@ export default function Header({ session }: HeaderProps) {
 													<DropdownMenuItem asChild>
 														<Link
 															className='flex flex-row items-center'
-															href={'/account'}
+															href={
+																'/leaderboards'
+															}
 														>
 															<ListOrdered
 																width={20}
