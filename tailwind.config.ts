@@ -18,6 +18,12 @@ const config = {
 			},
 		},
 		extend: {
+			screens: {
+				xs: '320px',
+				'3xl': '1600px',
+				'4xl': '2000px',
+				'5xl': '2400px',
+			},
 			colors: {
 				formulared: '#e10600',
 				border: 'hsl(var(--border))',

@@ -66,18 +66,18 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 
 	return (
 		<>
-			<Card className='max-w-2xl w-full h-fit'>
+			<Card className='w-full max-w-2xl h-fit'>
 				<CardHeader>
-					<CardTitle className='text-3xl flex flex-row items-center'>
+					<CardTitle className='text-2xl sm:text-3xl flex flex-row items-center'>
 						{stock.name}
-						<span className='ml-3 text-xl font-semibold'>
+						<span className='ml-2 sm:ml-3 text-base sm:text-xl font-semibold'>
 							{stock.symbol}
 						</span>
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<div className='-mt-4 mb-5'>
-						<p className='text-primary text-3xl font-semibold'>
+						<p className='text-primary text-2xl sm:text-3xl font-semibold'>
 							{isHovering
 								? `$${hoveredPrice}`
 								: `$${currentPrice.toFixed(2)}`}
@@ -115,10 +115,12 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 							</p>
 						</div>
 					</div>
-					<div className='border border-b-0 rounded-t-md min-h-[22rem]'>
+					<div className='border border-b-0 rounded-t-md'>
 						{memoizedData.length === 0 ? (
-							<div className='relative top-24'>
-								<TrackLoadingSpinner />
+							<div className='min-h-[16rem] sm:min-h-[20rem] md:min-h-[22rem]'>
+								<div className='relative top-12 sm:top-24'>
+									<TrackLoadingSpinner />
+								</div>
 							</div>
 						) : (
 							<StockChart
@@ -132,64 +134,68 @@ export default function StockCard({ stock, changeData }: StockCardProps) {
 					<RangeButtons handleRangeChange={handleRangeChange} />
 					<div className='mt-6'>
 						<div>
-							<h2 className='text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
+							<h2 className='text-xl sm:text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
 						</div>
-						<div className='flex flex-row mt-4'>
-							<div className='flex flex-row px-8 w-fit'>
+						<div className='flex flex-wrap mt-4'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<MonitorPlay />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>
 										{addOrdinalSuffix(
 											stock.championship_pos
 										)}
 									</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Championship Standing
 									</p>
 								</div>
 							</div>
-							<div className='flex flex-row px-8 w-fit'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<UsersRound />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.points}</p>
-									<p className='text-sm opacity-75'>Points</p>
+									<p className='text-xs sm:text-sm opacity-75'>
+										Points
+									</p>
 								</div>
 							</div>
-							<div className='flex flex-row px-8 w-fit'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<Gamepad2 />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.category.toUpperCase()}</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Category
 									</p>
 								</div>
 							</div>
 						</div>
 						<div className='mt-2'>
-							<div className='flex flex-row w-full px-8'>
+							<div className='flex flex-row w-full px-4 sm:px-8'>
 								<div className='flex items-center justify-center text-center'>
 									<MessageSquareText />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.team}</p>
-									<p className='text-sm opacity-75'>Team</p>
+									<p className='text-xs sm:text-sm opacity-75'>
+										Team
+									</p>
 								</div>
 							</div>
 						</div>
 						<div className='mt-2'>
-							<div className='flex flex-row w-full px-8'>
+							<div className='flex flex-row w-full px-4 sm:px-8'>
 								<div className='flex items-center justify-center text-center'>
 									<Text />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.country}</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Country
 									</p>
 								</div>
@@ -209,18 +215,18 @@ interface ChartErrorCardProps {
 function ChartErrorCard({ stock }: ChartErrorCardProps) {
 	return (
 		<>
-			<Card className='max-w-2xl w-full h-fit'>
+			<Card className='w-full max-w-2xl h-fit'>
 				<CardHeader>
-					<CardTitle className='text-3xl flex flex-row items-center'>
+					<CardTitle className='text-xl sm:text-2xl md:text-3xl flex flex-col sm:flex-row items-start sm:items-center'>
 						{stock.name}
-						<span className='ml-3 text-xl font-semibold'>
+						<span className='mt-1 sm:mt-0 sm:ml-3 text-lg sm:text-xl font-semibold'>
 							{stock.symbol}
 						</span>
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<div className='-mt-4 mb-5'>
-						<p className='text-primary text-3xl font-semibold'>
+						<p className='text-primary text-2xl sm:text-3xl font-semibold'>
 							$
 							{Number(stock.price).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
@@ -250,8 +256,6 @@ function ChartErrorCard({ stock }: ChartErrorCardProps) {
 					</div>
 					<div className='border rounded-md h-[30rem]'>
 						<div className='relative top-36 left-1/4'>
-							{/* <TrackLoadingSpinner /> */}
-							{/* <p>Error getting stock price graph</p> */}
 							<div className='w-1/2'>
 								<ErrorMessage />
 							</div>
@@ -259,64 +263,68 @@ function ChartErrorCard({ stock }: ChartErrorCardProps) {
 					</div>
 					<div className='mt-6'>
 						<div>
-							<h2 className='text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
+							<h2 className='text-xl sm:text-2xl font-semibold'>{`About ${stock.symbol?.toUpperCase()}`}</h2>
 						</div>
-						<div className='flex flex-row mt-4'>
-							<div className='flex flex-row px-8 w-fit'>
+						<div className='flex flex-wrap mt-4'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<MonitorPlay />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>
 										{addOrdinalSuffix(
 											stock.championship_pos
 										)}
 									</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Championship Standing
 									</p>
 								</div>
 							</div>
-							<div className='flex flex-row px-8 w-fit'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<UsersRound />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.points}</p>
-									<p className='text-sm opacity-75'>Points</p>
+									<p className='text-xs sm:text-sm opacity-75'>
+										Points
+									</p>
 								</div>
 							</div>
-							<div className='flex flex-row px-8 w-fit'>
+							<div className='flex flex-row px-4 sm:px-8 w-1/2 sm:w-fit mb-4'>
 								<div className='flex items-center justify-center text-center'>
 									<Gamepad2 />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.category.toUpperCase()}</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Category
 									</p>
 								</div>
 							</div>
 						</div>
 						<div className='mt-2'>
-							<div className='flex flex-row w-full px-8'>
+							<div className='flex flex-row w-full px-4 sm:px-8'>
 								<div className='flex items-center justify-center text-center'>
 									<MessageSquareText />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.team}</p>
-									<p className='text-sm opacity-75'>Team</p>
+									<p className='text-xs sm:text-sm opacity-75'>
+										Team
+									</p>
 								</div>
 							</div>
 						</div>
 						<div className='mt-2'>
-							<div className='flex flex-row w-full px-8'>
+							<div className='flex flex-row w-full px-4 sm:px-8'>
 								<div className='flex items-center justify-center text-center'>
 									<Text />
 								</div>
-								<div className='px-5 py-3 leading-5 text-md'>
+								<div className='px-2 sm:px-5 py-3 leading-5 text-sm sm:text-md'>
 									<p>{stock.country}</p>
-									<p className='text-sm opacity-75'>
+									<p className='text-xs sm:text-sm opacity-75'>
 										Country
 									</p>
 								</div>

@@ -8,7 +8,14 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Separator } from './ui/separator';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import {
+	Area,
+	AreaChart,
+	CartesianGrid,
+	ResponsiveContainer,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 interface StockData {
 	time: string;
@@ -82,119 +89,142 @@ const StockChart = React.memo(
 			setHover(false);
 		}, [setIsHovering]);
 
+		const cookieValue = document.cookie
+			.split('; ')
+			.find((row) => row.startsWith('graphStyle='))
+			?.split('=')[1];
+
 		return (
 			<ChartContainer config={chartConfig} className='h-full w-full'>
-				<AreaChart
-					onMouseMove={handleMouseMove}
-					onMouseEnter={handleMouseEnter}
-					onMouseLeave={handleMouseLeave}
-					accessibilityLayer
-					className='transition-colors'
-					data={chartData}
-					margin={{ left: 0, right: 0, top: 0 }}
-				>
-					<defs>
-						<linearGradient
-							id='colorUv'
-							x1='0'
-							y1='0'
-							x2='0'
-							y2='1'
+				<div className='h-full w-full'>
+					<ResponsiveContainer width='100%' height='100%'>
+						<AreaChart
+							onMouseMove={handleMouseMove}
+							onMouseEnter={handleMouseEnter}
+							onMouseLeave={handleMouseLeave}
+							data={chartData}
+							margin={{ left: 0, right: 0, top: 5, bottom: 5 }}
 						>
-							<stop
-								offset='5%'
-								stopColor={
-									priceChange >= 0 ? '#54a289' : '#e10600'
-								}
-								stopOpacity={0.8}
-							/>
-							<stop
-								offset='90%'
-								stopColor={
-									priceChange >= 0 ? '#54a289' : '#e10600'
-								}
-								stopOpacity={0}
-							/>
-						</linearGradient>
-					</defs>
-					<CartesianGrid strokeDasharray='3 3' />
-					<YAxis domain={[minPrice * 0.9, maxPrice * 1.1]} hide />
-					<XAxis
-						dataKey='time'
-						tickLine={false}
-						axisLine={false}
-						tickMargin={8}
-						minTickGap={32}
-						tickFormatter={(value) => {
-							return value.toLocaleDateString('en-US', {
-								month: 'short',
-								day: 'numeric',
-								hour: 'numeric',
-								minute: 'numeric',
-							});
-						}}
-					/>
-					<ChartTooltip
-						cursor={true}
-						content={
-							<ChartTooltipContent
-								className='bg-card dark:bg-black'
-								labelKey='time'
-								indicator='line'
-								nameKey='price'
-								formatter={(value, name, item) => (
-									<div>
-										<span>
-											{new Date(
-												item.payload.time
-											).toLocaleDateString('en-US', {
-												month: 'short',
-												day: 'numeric',
-												hour: 'numeric',
-												minute: 'numeric',
-											})}
-										</span>
-										<Separator />
-										<div className='mt-1 flex min-w-[130px] items-center text-xs text-muted-foreground'>
-											{chartConfig[
-												name as keyof typeof chartConfig
-											]?.label || name}
-											<div className='ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground'>
-												{`$${value.toLocaleString(
-													undefined,
-													{
-														minimumFractionDigits: 2,
-														maximumFractionDigits: 2,
-													}
-												)}`}
-											</div>
-										</div>
-									</div>
-								)}
-								labelFormatter={(value) =>
-									new Date(value).toLocaleDateString(
-										'en-US',
-										{
-											month: 'short',
-											day: 'numeric',
-											year: 'numeric',
+							<defs>
+								<linearGradient
+									id='colorUv'
+									x1='0'
+									y1='0'
+									x2='0'
+									y2='1'
+								>
+									<stop
+										offset='5%'
+										stopColor={
+											priceChange >= 0
+												? '#54a289'
+												: '#e10600'
 										}
-									)
+										stopOpacity={0.8}
+									/>
+									<stop
+										offset='90%'
+										stopColor={
+											priceChange >= 0
+												? '#54a289'
+												: '#e10600'
+										}
+										stopOpacity={0}
+									/>
+								</linearGradient>
+							</defs>
+							<CartesianGrid strokeDasharray='3 3' />
+							<YAxis
+								domain={[minPrice * 0.9, maxPrice * 1.1]}
+								hide
+							/>
+							<XAxis
+								dataKey='time'
+								tickLine={false}
+								axisLine={false}
+								tickMargin={8}
+								minTickGap={32}
+								tickFormatter={(value) => {
+									return value.toLocaleDateString('en-US', {
+										month: 'short',
+										day: 'numeric',
+										hour: 'numeric',
+										minute: 'numeric',
+									});
+								}}
+							/>
+							<ChartTooltip
+								cursor={true}
+								content={
+									<ChartTooltipContent
+										className='bg-card dark:bg-black'
+										labelKey='time'
+										indicator='line'
+										nameKey='price'
+										formatter={(value, name, item) => (
+											<div>
+												<span>
+													{new Date(
+														item.payload.time
+													).toLocaleDateString(
+														'en-US',
+														{
+															month: 'short',
+															day: 'numeric',
+															hour: 'numeric',
+															minute: 'numeric',
+														}
+													)}
+												</span>
+												<Separator />
+												<div className='mt-1 flex min-w-[130px] items-center text-xs text-muted-foreground'>
+													{chartConfig[
+														name as keyof typeof chartConfig
+													]?.label || name}
+													<div className='ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground'>
+														{`$${value.toLocaleString(
+															undefined,
+															{
+																minimumFractionDigits: 2,
+																maximumFractionDigits: 2,
+															}
+														)}`}
+													</div>
+												</div>
+											</div>
+										)}
+										labelFormatter={(value) =>
+											new Date(value).toLocaleDateString(
+												'en-US',
+												{
+													month: 'short',
+													day: 'numeric',
+													year: 'numeric',
+												}
+											)
+										}
+									/>
 								}
 							/>
-						}
-					/>
-					<Area
-						className='transition-colors duration-700'
-						dataKey='price'
-						type='linear'
-						fill='url(#colorUv)'
-						fillOpacity={0.1}
-						stroke={priceChange >= 0 ? '#54a289' : '#e10600'}
-						strokeWidth={hover ? 2.8 : 2}
-						animationDuration={450}
-					/>
-				</AreaChart>
+							<Area
+								className='transition-colors duration-700'
+								dataKey='price'
+								type={
+									cookieValue === 'curved'
+										? 'natural'
+										: 'linear'
+								}
+								fill='url(#colorUv)'
+								fillOpacity={0.1}
+								stroke={
+									priceChange >= 0 ? '#54a289' : '#e10600'
+								}
+								strokeWidth={hover ? 2.8 : 2}
+								animationDuration={450}
+							/>
+						</AreaChart>
+					</ResponsiveContainer>
+				</div>
 			</ChartContainer>
 		);
 	}
