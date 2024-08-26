@@ -60,18 +60,16 @@ export default async function StockPage({
 
 	return (
 		<>
-			<div className='flex flex-row justify-center mt-10'>
+			<div className='flex flex-col lg:flex-row justify-center items-center lg:items-start my-5 md:my-10 px-4'>
 				<StockCard stock={stock} changeData={dummyData} />
-				{session && balance !== null && stockQuantity !== null ? (
-					<div className='ml-5'>
+				{session && balance !== null && stockQuantity !== null && (
+					<div className='flex justify-center mt-5 lg:mt-0 lg:ml-5 w-full lg:w-auto'>
 						<OrderCard
 							stock={stock}
 							balance={Number(balance)}
 							quantity={stockQuantity}
 						/>
 					</div>
-				) : (
-					''
 				)}
 				<Toaster />
 			</div>

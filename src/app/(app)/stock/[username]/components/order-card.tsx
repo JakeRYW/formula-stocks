@@ -23,16 +23,16 @@ const OrderCard = ({ stock, balance, quantity }: OrderCardProps) => {
 
 	return (
 		<>
-			<Card>
+			<Card className='w-full max-w-2xl'>
 				<CardContent>
-					<div className='flex justify-center mt-6'>
+					<div className='flex justify-center sm:justify-start mt-6 lg:justify-center'>
 						<Button
 							onClick={() => handleChangeTradeOption('buy')}
 							className={`px-5 py-6 border border-gray-200 font-normal text-md rounded-r-none ${
 								tradeOption !== 'buy'
 									? 'bg-white text-gray-500 hover:bg-black/5 dark:bg-black/5'
 									: 'bg-gray-200 text-black hover:bg-gray-200 dark:bg-black/50 dark:text-white'
-							}`}                
+							}`}
 						>
 							Buy {stock.symbol}
 						</Button>

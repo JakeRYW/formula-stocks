@@ -169,7 +169,7 @@ export const OrderForm = ({
 					</p>
 					<div className='relative'>
 						<input
-							className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+							className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full'
 							type='number'
 							onChange={handleChange}
 							onKeyDown={handleKeyDown}
@@ -331,7 +331,7 @@ export const OrderForm = ({
 				</p>
 				<div className='relative'>
 					<input
-						className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+						className='peer px-3 py-2 border border-gray-300 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full'
 						type='number'
 						onChange={handleChange}
 						onKeyDown={handleKeyDown}
@@ -341,7 +341,7 @@ export const OrderForm = ({
 					<div className='absolute right-2 bottom-1 hidden peer-hover:block peer-focus:block hover:block'>
 						<div className='flex flex-row items-center'>
 							<Button
-								className='p-0 h-8 w-8 rounded-none rounded-l-md border-none'
+								className='p-0 h-8 w-8 rounded-none rounded-l-md border-none active:bg-none'
 								variant={'ghost'}
 								size={'sm'}
 								onClick={() => {
