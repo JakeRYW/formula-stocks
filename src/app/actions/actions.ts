@@ -2,16 +2,19 @@
 
 import { db } from '@/lib/db';
 import {
+	achievements,
 	history,
 	portfolio,
 	stocks,
 	transactions,
+	user_achievements,
 	users,
 } from '@/drizzle/schema';
-import { and, asc, desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, ilike, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { TradeOptions } from '@/types';
 import { unstable_cache } from 'next/cache';
+import { cookies } from 'next/headers';
 
 const RED = '\u001b[31m';
 const BLUE = '\u001b[34m';
@@ -25,6 +28,10 @@ const ITALICIZE = '\u001b[3m';
 const UNDERLINE = '\u001b[4m';
 
 const RESET = '\u001b[0m';
+
+export async function createGraphStyleCookie(value: string) {
+	cookies().set('graphStyle', value);
+}
 
 export async function fetchBalance(username: string) {
 	const result = await db
@@ -209,6 +216,32 @@ export async function getStockQuantity(stockId: string) {
 	}
 }
 
+export async function getPortfolio() {
+	const session = await auth();
+
+	if (!session || !session.user || !session.user.id) return null;
+
+	const portfolioResult = await db
+		.select({
+			name: stocks.name,
+			symbol: stocks.symbol,
+			change_24hr: stocks.change_24hr,
+			quantity: sql<number>`COALESCE(${portfolio.quantity}, 0)`,
+			price: stocks.price,
+		})
+		.from(portfolio)
+		.innerJoin(
+			stocks,
+			and(
+				eq(portfolio.stockId, stocks.id),
+				eq(portfolio.userId, session.user.id)
+			)
+		)
+		.where(gt(portfolio.quantity, 0));
+
+	return portfolioResult;
+}
+
 export async function getPortfolioValue() {
 	const session = await auth();
 
@@ -346,6 +379,53 @@ export async function getStockPrice(stockId: string) {
 	return result[0].price;
 }
 
+export async function getAnalytics() {
+	const userCount = await db.select({ count: count() }).from(users);
+	const transactionCount = await db
+		.select({ count: count() })
+		.from(transactions);
+	const stockCount = await db.select({ count: count() }).from(stocks);
+
+	return {
+		data: {
+			userCount: userCount[0].count,
+			transactionCount: transactionCount[0].count,
+			stockCount: stockCount[0].count,
+		},
+	};
+}
+
+export async function getTrades(amount: number) {
+	const session = await auth();
+
+	if (!session || !session.user || !session.user.id) return null;
+
+	const tradeHistory = await db
+		.select({
+			symbol: stocks.symbol,
+			name: stocks.name,
+			quantity: transactions.quantity,
+			total_price: transactions.total_price,
+			trade_type: transactions.transaction_type,
+			date: transactions.created_at,
+		})
+		.from(transactions)
+		.leftJoin(stocks, eq(transactions.stockId, stocks.id))
+		.where(eq(transactions.userId, session.user.id))
+		.orderBy(desc(transactions.created_at))
+		.limit(amount);
+
+	return tradeHistory;
+
+	// return {
+	// 	data: {
+	// 		userCount: userCount[0].count,
+	// 		transactionCount: transactionCount[0].count,
+	// 		stockCount: stockCount[0].count,
+	// 	},
+	// };
+}
+
 export const getCachedLeaderboardResults = unstable_cache(
 	async () => getLeaderboardResults(10),
 	['leaderboard-results'],
@@ -388,6 +468,32 @@ export async function getLeaderboardResults(limit: number) {
 		}
 		return null;
 	}
+}
+
+export async function getAchievements() {
+	const achievementsResult = await db.select().from(achievements);
+	return achievementsResult;
+}
+
+export async function getUserAchievements() {
+	const session = await auth();
+
+	if (!session || !session.user || !session.user.id) return null;
+
+	const userAchievementsResult = await db
+		.select()
+		.from(user_achievements)
+		.where(eq(user_achievements.userId, session.user.id));
+
+	return userAchievementsResult;
+}
+
+export async function createAchievement(name: string, description: string) {
+	const achievementResult = await db.insert(achievements).values({
+		name,
+		description,
+	});
+	return achievementResult;
 }
 
 export async function getRecentTransactions(limit: number) {

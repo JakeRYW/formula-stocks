@@ -13,7 +13,6 @@ import {
 	UserRound,
 	LogOut,
 	Settings,
-	ClipboardList,
 	FolderClock,
 	LogIn,
 	Moon,
@@ -176,18 +175,6 @@ export default function Header({ session }: HeaderProps) {
 												<DropdownMenuItem asChild>
 													<Link
 														className='flex flex-row items-center'
-														href={'/account'}
-													>
-														<UserRound
-															width={20}
-															className='mr-2'
-														/>
-														Profile
-													</Link>
-												</DropdownMenuItem>
-												<DropdownMenuItem asChild>
-													<Link
-														className='flex flex-row items-center'
 														href={
 															'/account/portfolio'
 														}
@@ -211,20 +198,6 @@ export default function Header({ session }: HeaderProps) {
 															className='mr-2'
 														/>
 														History
-													</Link>
-												</DropdownMenuItem>
-												<DropdownMenuItem asChild>
-													<Link
-														className='flex flex-row items-center'
-														href={
-															'/account/watchlist'
-														}
-													>
-														<ClipboardList
-															width={20}
-															className='mr-2'
-														/>
-														Watchlist
 													</Link>
 												</DropdownMenuItem>
 												<DropdownMenuItem asChild>
