@@ -8,6 +8,7 @@ import {
 	pgEnum,
 	doublePrecision,
 	serial,
+	boolean,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from 'next-auth/adapters';
 
@@ -71,6 +72,7 @@ export const stocks = pgTable('stocks', {
 	color: text('color').notNull(),
 	category: text('category').notNull(),
 	image: text('image').notNull(),
+	halted: boolean('halted').notNull().default(false),
 	date_added: timestamp('date_added', { mode: 'string' }).defaultNow(),
 	updated_at: timestamp('updated_at')
 		.defaultNow()
@@ -126,5 +128,30 @@ export const history = pgTable(
 	},
 	(t) => ({
 		primaryKey: primaryKey({ columns: [t.id, t.time] }),
+	})
+);
+
+export const achievements = pgTable('achievements', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	name: text('name').notNull(),
+	description: text('description').notNull(),
+	created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+});
+
+export const user_achievements = pgTable(
+	'user_achievements',
+	{
+		userId: text('userId')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		achievementId: text('achievementId')
+			.notNull()
+			.references(() => achievements.id, { onDelete: 'cascade' }),
+		unlocked_at: timestamp('unlocked_at', { mode: 'string' }).defaultNow(),
+	},
+	(t) => ({
+		primaryKey: primaryKey({ columns: [t.userId, t.achievementId] }),
 	})
 );
